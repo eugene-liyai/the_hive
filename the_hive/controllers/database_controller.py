@@ -59,11 +59,15 @@ class DatabaseController:
         :param email: Email address of the new user
         :param role: role selected by the new user
         :param password: Password for the new user
-        :return: The id of the new user
+        :return: True if user was created and false
         """
-        new_user = Users(first_name=first_name, last_name=last_name, email=email, password=password, role=role)
-        self.session.add(new_user)
-        self.session.commit()
+        try:
+            new_user = Users(first_name=first_name, last_name=last_name, email=email, password=password, role=role)
+            self.session.add(new_user)
+            self.session.commit()
+            return True
+        except Exception:
+            return False
 
     def get_user_by_email(self, email=None, serialize=False):
         """

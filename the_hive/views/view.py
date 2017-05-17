@@ -68,6 +68,13 @@ def load_user(userid):
     return Users.query.get(int(userid))
 
 
+def index():
+    if current_user:
+        return render_template('dashboard.html', user=current_user)
+    else:
+        return render_template('index.html')
+
+
 def login():
     """
 
@@ -93,3 +100,57 @@ def login():
     except:
         flash('Error communicating with the server')
         return render_template("login.html")
+
+
+@login_required
+def add_user():
+    """
+    
+    The method adds a new user to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        role = request.form['role']
+        password = request.form['password']
+        add_user_response = DATA_CONTROLLER.create_user(first_name, last_name, email, password, role)
+        if add_user_response:
+            flash("successfully added user {} {}".format(first_name, last_name))
+    return render_template("add_user.html")
+
+
+@login_required
+def add_job():
+    """
+
+    The method adds new job to the application.
+
+    :return: returns success message if methodexecutes successfuly
+    """
+    if request.method == 'POST':
+        job_name = request.form['job_name']
+        job_id = request.form['job_id']
+        verbatim = request.form['verbatim']
+        timestamp = request.form['timestamp']
+        duration = request.form['duration']
+        description = request.form['description']
+        user = request.form['user']
+        try:
+            job_id_response = DATA_CONTROLLER.create_job(job_id,
+                                               job_name,
+                                               verbatim,
+                                               timestamp,
+                                               duration,
+                                               description,
+                                               user)
+            flash("Added job '{}'".format(job_id_response))
+            return render_template('add_job.html')
+        except Exception as ex:
+            print(ex)
+            flash("Error adding job '{}'".format(job_id))
+            return render_template('add_job.html')
+
+
