@@ -338,6 +338,23 @@ class DatabaseController:
             except Exception as ex:
                 return False
 
+    def user_login_authentication(self, email=None, password=None):
+        """
+        The method checks for username/email and password match in the database
+
+        :param email: authentication email
+        :param password: authentication password
+        :return: dictionary of authentication status
+        """
+        if email and password:
+            user = self.get_user_by_email(email=email)
+            if user and user.check_user_password(password):
+                return {'status': True, 'User': user}
+            else:
+                return {'status': False, 'User': None}
+        else:
+            return {'status': False, 'User': None}
+
     def populate_database(self):
 
         #
