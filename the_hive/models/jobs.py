@@ -1,5 +1,5 @@
 """
-File      : bucketlist.py
+File      : jobs.py
 Date      : April, 2017
 Author    : eugene liyai
 Desc      : Model class that creates jobs and connects to database
@@ -15,9 +15,9 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Date, Boolean, Text
 from db_model import Model
 
 
-class Bucketlist(Model):
+class Jobs(Model):
     __tablename__ = 'Jobs'
-    job_id = Column(Integer, primary_key=True, nullable=False)
+    job_id = Column(String, primary_key=True, nullable=False)
     job_name = Column(String(100), nullable=False)
     date_created = Column(Date, default=datetime.utcnow)
     date_completed = Column(Date)
