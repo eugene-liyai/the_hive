@@ -9,6 +9,7 @@ Desc      : Controller file processes request from the url endpoints
 # necessary imports
 # ============================================================================
 import os
+from math import ceil
 
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -95,11 +96,22 @@ def login():
                 login_user(user, True)
                 flash("Logged in successfully as {}".format(user.username))
                 return redirect(request.args.get('next') or url_for('user', username=user.username))
-            flash('Incorrect username or password')
+            flash('Incorrect email or password')
         return render_template("login.html")
     except:
         flash('Error communicating with the server')
         return render_template("login.html")
+
+
+def logout():
+    """
+
+    The method logs out user currently in session.
+
+    :return: redirects to login page
+    """
+    logout_user()
+    return redirect(url_for('login'))
 
 
 @login_required
@@ -110,7 +122,7 @@ def add_user():
 
     :return: returns success message if method executes successfully
     """
-    if request.method == 'POST':
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
@@ -123,14 +135,101 @@ def add_user():
 
 
 @login_required
+def delete_user(user_id):
+    """
+
+    The method deletes user with the provided id.
+
+    :param user_id: id of the user to be deleted
+    :return: http response
+    """
+    try:
+        if DATA_CONTROLLER.delete_user(user_id):
+            flash("deleted job '{}'".format(user_id))
+            return redirect(url_for('users'))
+        else:
+            flash("failed to delete job '{}'".format(user_id))
+            return redirect(url_for('users'))
+    except ValueError as err:
+        print(err)
+        flash("Error communicating with the server")
+        return redirect(url_for('users'))
+
+
+@login_required
+def users(user_id):
+    """
+
+   The method returns user(s).
+
+   :param user_id: user id intended to be searched
+   :return: list of user(s) in the database
+   """
+    users = DATA_CONTROLLER.get_user_by_id(user_id=user_id, serialize=True)
+    page = request.args.get("limit")
+    number_of_pages = None
+    pages = []
+    if page:
+        number_of_pages = int(ceil(float(len(users)) / PAGE_SIZE))
+        converted_page = int(page)
+
+        if converted_page > number_of_pages or converted_page < 0:
+            return abort(404)
+
+        from_index = (converted_page - 1) * PAGE_SIZE
+        to_index = from_index + PAGE_SIZE
+
+        users = users[from_index:to_index]
+        if number_of_pages:
+            pages = range(1, number_of_pages + 1)
+
+        return render_template('users.html', pages=pages, users=users)
+
+
+@login_required
+def update_users(user_id):
+    """
+
+    The method updates existing user to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST':
+
+        new_user = {
+            "first_name": request.form["first_name"],
+            "last_name": request.form["last_name"],
+            "email": request.form["email"],
+            "role": request.form["role"],
+            "date_modified": datetime.utcnow()
+        }
+
+        try:
+            if user_id == current_user.user_id or current_user.role == 'ROLE_ADMIN':
+                DATA_CONTROLLER.update_user(user_id, new_user)
+                flash("updated user {} {}".format(request.form["first_name"], request.form["last_name"]))
+                return render_template('update_user.html')
+            else:
+                return render_template('403.html'), 403
+        except Exception as ex:
+            print(ex)
+            flash("Error updating user {} {}".format(request.form["first_name"], request.form["last_name"]))
+            return render_template('update_user.html')
+
+    else:
+        user = DATA_CONTROLLER.get_user_by_id(user_id)
+        return render_template('update_user.html', user=user)
+
+
+@login_required
 def add_job():
     """
 
     The method adds new job to the application.
 
-    :return: returns success message if methodexecutes successfuly
+    :return: returns success message if method executes successfully
     """
-    if request.method == 'POST':
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
         job_name = request.form['job_name']
         job_id = request.form['job_id']
         verbatim = request.form['verbatim']
@@ -154,3 +253,143 @@ def add_job():
             return render_template('add_job.html')
 
 
+@login_required
+def update_job(job_id):
+    """
+
+    The method updates existing job to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
+
+        date_completed = None
+        if request.form["competed"] is True:
+            date_completed = datetime.now()
+
+        new_job = {
+            "job_name": request.form["job_name"],
+            "date_completed": date_completed,
+            "competed": request.form["competed"],
+            "verbatim": request.form["verbatim"],
+            "timestamp": request.form["timestamp"],
+            "duration": request.form["duration"],
+            "description": request.form["description"],
+            "user": request.form["user"]
+        }
+
+        try:
+            DATA_CONTROLLER.update_job(job_id, new_job)
+            flash("updated job '{}'".format(job_id))
+            return redirect(url_for('jobs'))
+        except Exception as ex:
+            print(ex)
+            flash("Error updating job '{}'".format(job_id))
+            return redirect(url_for('jobs'))
+
+
+@login_required
+def jobs(job_id=None, serialize=True):
+    """
+
+    The method returns job(s).
+
+    :param serialize: Serialize helps indicate the format of the response
+    :param job_id: job id intended to be searched
+    :return: Json format or plain text depending in the serialize parameter
+    """
+    jobs = DATA_CONTROLLER.get_job_by_id(job_id=job_id, serialize=True)
+    page = request.args.get("limit")
+    number_of_pages = None
+    pages = []
+    if page:
+        number_of_pages = int(ceil(float(len(jobs)) / PAGE_SIZE))
+        converted_page = int(page)
+
+        if converted_page > number_of_pages or converted_page < 0:
+            return abort(404)
+
+        from_index = (converted_page - 1) * PAGE_SIZE
+        to_index = from_index + PAGE_SIZE
+
+        jobs = jobs[from_index:to_index]
+        if number_of_pages:
+            pages = range(1, number_of_pages + 1)
+
+        return render_template('jobs.html', pages=pages, jobs=jobs)
+
+
+@login_required
+def get_user_jobs(job_id=None, serialize=True):
+    """
+
+    The method returns job(s).
+
+    :param serialize: Serialize helps indicate the format of the response
+    :param job_id: job id intended to be searched
+    :return: Json format or plain text depending in the serialize parameter
+    """
+    jobs = DATA_CONTROLLER.get_user_job_by_id(job_id=job_id, user=current_user.user_id, serialize=True)
+    page = request.args.get("limit")
+    number_of_pages = None
+    pages = []
+    if page:
+        number_of_pages = int(ceil(float(len(jobs)) / PAGE_SIZE))
+        converted_page = int(page)
+
+        if converted_page > number_of_pages or converted_page < 0:
+            return abort(404)
+
+        from_index = (converted_page - 1) * PAGE_SIZE
+        to_index = from_index + PAGE_SIZE
+
+        jobs = jobs[from_index:to_index]
+        if number_of_pages:
+            pages = range(1, number_of_pages + 1)
+
+        return render_template('jobs.html', pages=pages, jobs=jobs)
+
+
+@login_required
+def delete_job(job_id):
+    """
+
+    The method deletes job with the provided id.
+
+    :param job_id: id of the job to be deleted
+    :return: http response
+    """
+    if current_user.role == 'ROLE_ADMIN':
+        try:
+            if DATA_CONTROLLER.delete_job(job_id):
+                flash("deleted job '{}'".format(job_id))
+                return redirect(url_for('jobs'))
+            else:
+                flash("failed to delete job '{}'".format(job_id))
+                return redirect(url_for('jobs'))
+        except ValueError as err:
+            print(err)
+            flash("Error communicating with the server")
+            return redirect(url_for('jobs'))
+    else:
+        return render_template('403.html'), 403
+
+
+@login_required
+def user_profile(user_id):
+    if current_user.user_id == user_id or current_user.role == 'ROLE_ADMIN':
+        return render_template('user.html', user=current_user)
+    else:
+        return render_template('403.html'), 403
+
+
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+def server_error(e):
+    return render_template('500.html'), 500
+
+
+def forbiden(e):
+    return render_template('403.html'), 403

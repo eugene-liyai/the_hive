@@ -25,7 +25,7 @@ class Users(Model, UserMixin):
     last_name = Column(String(100), nullable=False)
     email = Column(String(200), nullable=False, unique=True)
     hash_password = Column(String(1000))
-    date_added = Column(Date)
+    date_added = Column(Date, default=datetime.utcnow)
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
     jobs = relationship('Jobs', backref="Users")
