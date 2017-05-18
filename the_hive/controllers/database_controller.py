@@ -142,6 +142,35 @@ class DatabaseController:
 
         return updated_user.serialize()
 
+    def update_password(self, user_id, new_user):
+        """
+        The application looks up the user with the provided user_id
+        in order to update the user's password
+
+        :param user_id: The id of the user intended to be updated
+        :param new_user: user object that holds updated details
+        :return: The user with the matching id.
+        """
+
+        if int(user_id) < 0:
+            raise ValueError('Parameter [user_id] should be positive!')
+
+        updated_user = None
+        users = self.get_user_by_id(user_id)
+        user = None
+        if len(users) is not 1:
+            return updated_user
+        else:
+            user = users[0]
+
+        if user:
+            user.email = new_user["password"]
+            self.session.add(user)
+            self.session.commit()
+            updated_user = self.get_user_by_id(user_id)[0]
+
+        return updated_user.serialize()
+
     def delete_user(self, user_id):
         """
         The application looks up the user with the provided user_id

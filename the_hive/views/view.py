@@ -122,6 +122,8 @@ def add_user():
 
     :return: returns success message if method executes successfully
     """
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -143,6 +145,8 @@ def delete_user(user_id):
     :param user_id: id of the user to be deleted
     :return: http response
     """
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
     try:
         if DATA_CONTROLLER.delete_user(user_id):
             flash("deleted job '{}'".format(user_id))
@@ -160,11 +164,15 @@ def delete_user(user_id):
 def users(user_id):
     """
 
-   The method returns user(s).
+    The method returns user(s).
 
-   :param user_id: user id intended to be searched
-   :return: list of user(s) in the database
-   """
+    :param user_id: user id intended to be searched
+    :return: list of user(s) in the database
+    """
+
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
     users = DATA_CONTROLLER.get_user_by_id(user_id=user_id, serialize=True)
     page = request.args.get("limit")
     number_of_pages = None
@@ -222,6 +230,42 @@ def update_users(user_id):
 
 
 @login_required
+def update_user_password(user_id):
+    """
+
+    The method updates existing user to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST':
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+        if password != confirm_password:
+            flash("password provided does not match")
+            return render_template('update_user.html')
+
+        new_user = {
+            "password": password
+        }
+
+        try:
+            if user_id == current_user.user_id or current_user.role == 'ROLE_ADMIN':
+                DATA_CONTROLLER.update_password(user_id, new_user)
+                flash("updated password")
+                return render_template('update_user.html')
+            else:
+                return render_template('403.html'), 403
+        except Exception as ex:
+            print(ex)
+            flash("Error updating user {} {}".format(request.form["first_name"], request.form["last_name"]))
+            return render_template('update_user.html')
+
+    else:
+        user = DATA_CONTROLLER.get_user_by_id(user_id)
+        return render_template('update_user.html', user=user)
+
+
+@login_required
 def add_job():
     """
 
@@ -229,6 +273,9 @@ def add_job():
 
     :return: returns success message if method executes successfully
     """
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
         job_name = request.form['job_name']
         job_id = request.form['job_id']
@@ -251,6 +298,7 @@ def add_job():
             print(ex)
             flash("Error adding job '{}'".format(job_id))
             return render_template('add_job.html')
+    return render_template('add_job.html')
 
 
 @login_required
@@ -289,7 +337,7 @@ def update_job(job_id):
 
 
 @login_required
-def jobs(job_id=None, serialize=True):
+def jobs(job_id=None):
     """
 
     The method returns job(s).
@@ -320,7 +368,7 @@ def jobs(job_id=None, serialize=True):
 
 
 @login_required
-def get_user_jobs(job_id=None, serialize=True):
+def get_user_jobs(job_id=None):
     """
 
     The method returns job(s).
@@ -381,6 +429,66 @@ def user_profile(user_id):
         return render_template('user.html', user=current_user)
     else:
         return render_template('403.html'), 403
+
+
+@login_required
+def update_rate(rate_id):
+    """
+
+    The method updates existing rate to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
+
+        new_rate = {
+            "rate": request.form["rate"],
+            "description": request.form["description"]
+        }
+
+        try:
+            DATA_CONTROLLER.update_rate(rate_id, new_rate)
+            flash("updated rate '{}'".format(rate_id))
+            return redirect(url_for('rate'))
+        except Exception as ex:
+            print(ex)
+            flash("Error updating rate '{}'".format(rate_id))
+            return redirect(url_for('rate'))
+
+
+@login_required
+def rate(rate_id):
+    """
+
+    The method returns job rate(s).
+
+    :param rate_id: rate id intended to be searched
+    :return: job rate(s)
+    """
+
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
+    rates = DATA_CONTROLLER.get_rate_by_id(rate_id=rate_id, serialize=True)
+    page = request.args.get("limit")
+    number_of_pages = None
+    pages = []
+
+    if page:
+        number_of_pages = int(ceil(float(len(rates)) / PAGE_SIZE))
+        converted_page = int(page)
+
+        if converted_page > number_of_pages or converted_page < 0:
+            return abort(404)
+
+        from_index = (converted_page - 1) * PAGE_SIZE
+        to_index = from_index + PAGE_SIZE
+
+        rates = rates[from_index:to_index]
+        if number_of_pages:
+            pages = range(1, number_of_pages + 1)
+
+        return render_template('rate.html', pages=pages, jobs=rates)
 
 
 def page_not_found(e):
