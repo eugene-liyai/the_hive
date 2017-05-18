@@ -59,11 +59,15 @@ class DatabaseController:
         :param email: Email address of the new user
         :param role: role selected by the new user
         :param password: Password for the new user
-        :return: The id of the new user
+        :return: True if user was created and false
         """
-        new_user = Users(first_name=first_name, last_name=last_name, email=email, password=password, role=role)
-        self.session.add(new_user)
-        self.session.commit()
+        try:
+            new_user = Users(first_name=first_name, last_name=last_name, email=email, password=password, role=role)
+            self.session.add(new_user)
+            self.session.commit()
+            return True
+        except Exception:
+            return False
 
     def get_user_by_email(self, email=None, serialize=False):
         """
@@ -132,6 +136,35 @@ class DatabaseController:
             user.phone = new_user["role"]
             user.first_name = new_user["first_name"]
             user.last_name = new_user["last_name"]
+            self.session.add(user)
+            self.session.commit()
+            updated_user = self.get_user_by_id(user_id)[0]
+
+        return updated_user.serialize()
+
+    def update_password(self, user_id, new_user):
+        """
+        The application looks up the user with the provided user_id
+        in order to update the user's password
+
+        :param user_id: The id of the user intended to be updated
+        :param new_user: user object that holds updated details
+        :return: The user with the matching id.
+        """
+
+        if int(user_id) < 0:
+            raise ValueError('Parameter [user_id] should be positive!')
+
+        updated_user = None
+        users = self.get_user_by_id(user_id)
+        user = None
+        if len(users) is not 1:
+            return updated_user
+        else:
+            user = users[0]
+
+        if user:
+            user.email = new_user["password"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -299,7 +332,7 @@ class DatabaseController:
         else it returns all the jobs
 
         :param job_id: The id of the job intended to be searched(default value is None)
-        :return: The user with the matching id or all users.
+        :return: The job with the matching id or all jobs.
         """
 
         all_jobs = []
@@ -311,6 +344,32 @@ class DatabaseController:
                 return all_jobs
             else:
                 all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
+
+        if serialize:
+            return [job.serialize() for job in all_jobs]
+        else:
+            return all_jobs
+
+    def get_user_job_by_id(self, job_id=None, user=None, serialize=False):
+        """
+        If the job_id parameter is  provided, the application looks up the job with the provided id,
+        else it returns all the jobs
+
+        :param job_id: The id of the job intended to be searched(default value is None)
+        :param user: user assigned to the job
+        :return: The job with the matching id or all jobs.
+        """
+
+        all_jobs = []
+
+        if job_id is None:
+            all_jobs = self.session.query(Jobs).filter(Jobs.user == user).order_by(Jobs.job_id).all()
+        else:
+            if int(job_id) < 0:
+                return all_jobs
+            else:
+                all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id) \
+                    .filter(Jobs.user == user).all()
 
         if serialize:
             return [job.serialize() for job in all_jobs]
@@ -337,6 +396,23 @@ class DatabaseController:
                 return True
             except Exception as ex:
                 return False
+
+    def user_login_authentication(self, email=None, password=None):
+        """
+        The method checks for username/email and password match in the database
+
+        :param email: authentication email
+        :param password: authentication password
+        :return: dictionary of authentication status
+        """
+        if email and password:
+            user = self.get_user_by_email(email=email)
+            if user and user.check_user_password(password):
+                return {'status': True, 'User': user}
+            else:
+                return {'status': False, 'User': None}
+        else:
+            return {'status': False, 'User': None}
 
     def populate_database(self):
 
