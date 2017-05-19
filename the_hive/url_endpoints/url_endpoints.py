@@ -32,6 +32,6 @@ def initialize_api_routes(app):
                          methods=['POST', 'GET'])
         app.add_url_rule('/admin/jobs', 'jobs', jobs, methods=['GET'])
         app.add_url_rule('/user_jobs', 'user_jobs', get_user_jobs, methods=['GET'])
-        app.errorhandler(404, page_not_found)
-        app.errorhandler(500, server_error)
-        app.errorhandler(403, forbiden)
+        app.error_handler_spec[None][404] = page_not_found
+        app.error_handler_spec[None][500] = server_error
+        app.error_handler_spec[None][403] = forbiden

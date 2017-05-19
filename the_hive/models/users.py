@@ -15,7 +15,7 @@ from sqlalchemy import Column, String, Integer, Numeric, Date, desc
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
 
-from db_model import Model
+from the_hive.models.db_model import Model
 
 
 class Users(Model, UserMixin):

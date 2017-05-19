@@ -12,7 +12,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, String, Integer, ForeignKey, Date, Boolean, Text
 
-from db_model import Model
+from the_hive.models.db_model import Model
 
 
 class Jobs(Model):

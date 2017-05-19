@@ -12,7 +12,6 @@ import os
 from math import ceil
 
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 from flask import render_template, url_for, request, redirect, flash, abort
 from flask_login import login_required, login_user, logout_user, current_user
 

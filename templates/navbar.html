@@ -1,0 +1,45 @@
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}">the-hive</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden">
+                    <a href="#page-top"></a>
+                </li>
+                {% if current_user.is_authenticated %}
+
+                    <li class="page-scroll">
+                        <a href="{{ url_for('add_list') }}"><i class="fa fa-list-ol"></i> Add list</a>
+                    </li>
+
+                    <li class="page-scroll">
+                        <a href="{{ url_for('user', username=current_user.username) }}"><i class="fa fa-file"></i> User Cards</a>
+                    </li>
+
+                    <li class="page-scroll">
+                        <a href="{{ url_for('move_card', username=current_user.username) }}"><i class="fa fa-arrow-circle-right"></i> Move Card</a>
+                    </li>
+
+                    <li class="page-scroll">
+                        <a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a>
+                    </li>
+                {% else %}
+                    <li class="page-scroll">
+                        <a href="{{ url_for('login') }}"><i class="fa fa-sign-in"></i> Login</a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>

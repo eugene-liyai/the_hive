@@ -9,7 +9,7 @@ Desc      : Initializes tables in the database
 # necessary imports
 # ============================================================================
 from sqlalchemy import create_engine
-from db_model import Model
+from the_hive.models.db_model import Model
 
 
 def init_bucketlist_database(engine):
