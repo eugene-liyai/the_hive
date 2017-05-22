@@ -69,10 +69,9 @@ def load_user(userid):
 
 
 def index():
-    if current_user:
-        return render_template('dashboard.html', user=current_user)
-    else:
-        return render_template('index.html')
+    # if current_user:
+    #     return render_template('dashboard.html', user=current_user)
+    return render_template('index.html')
 
 
 def login():
