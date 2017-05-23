@@ -28,7 +28,7 @@ class Users(Model, UserMixin):
     date_added = Column(Date, default=datetime.utcnow)
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
-    jobs = relationship('Jobs', backref="Users")
+    jobs = relationship("Jobs", backref="Users")
 
     def get_id(self):
         return self.user_id

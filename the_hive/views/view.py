@@ -69,8 +69,8 @@ def load_user(userid):
 
 
 def index():
-    # if current_user:
-    #     return render_template('dashboard.html', user=current_user)
+    if current_user:
+        return render_template('dashboard.html', user=current_user)
     return render_template('index.html')
 
 
@@ -92,15 +92,17 @@ def login():
             if validation_return['status']:
                 user = validation_return['User']
                 login_user(user, True)
-                flash("Logged in successfully as {}".format(user.username))
-                return redirect(request.args.get('next') or url_for('user', username=user.username))
+                flash("Logged in successfully as {}".format(user.email))
+                return redirect(request.args.get('next') or url_for('index', username=user.email))
             flash('Incorrect email or password')
-        return render_template("login.html")
-    except:
+        return render_template("index.html")
+    except Exception as e:
+        print(e)
         flash('Error communicating with the server')
         return render_template("login.html")
 
 
+@login_required
 def logout():
     """
 
