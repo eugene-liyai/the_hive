@@ -37,7 +37,7 @@
         </div>
 
         <!-- Sidebar navigation -->
-        <ul class="nav sidebar-nav">
+        <ul class="nav sidebar-nav sidebar-nav-1">
             <li class="dropdown">
                 <ul id="settings-dropdown" class="dropdown-menu">
                     <li>
@@ -224,36 +224,23 @@
                     <li class="header-title">Images</li>
                     <li class="active">
                         <a class="img-holder switch-trigger" href="javascript:void(0)">
-                            <img alt="" src="../assets/img/sidebar-1.jpg">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-1.jpg') }}">
                         </a>
                     </li>
                     <li>
                         <a class="img-holder switch-trigger" href="javascript:void(0)">
-                            <img alt="" src="../assets/img/sidebar-2.jpg">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-2.jpg') }}">
                         </a>
                     </li>
                     <li>
                         <a class="img-holder switch-trigger" href="javascript:void(0)">
-                            <img alt="" src="../assets/img/sidebar-3.jpg">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-3.jpg') }}">
                         </a>
                     </li>
                     <li>
                         <a class="img-holder switch-trigger" href="javascript:void(0)">
-                            <img alt="" src="../assets/img/sidebar-4.jpg">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-4.jpg') }}">
                         </a>
-                    </li>
-                    <li class="button-container">
-                        <div class="">
-                            <a class="btn btn-rose btn-block" href="http://www.creative-tim.com/product/material-dashboard-pro-angular2" target="_blank">Buy Now</a>
-                        </div>
-                        <div class="">
-                            <a class="btn btn-info btn-block" href="http://www.creative-tim.com/product/material-dashboard-angular2" target="_blank">Get Free Demo</a>
-                        </div>
-                    </li>
-                    <li class="header-title">Thank you for 95 shares!</li>
-                    <li class="button-container">
-                        <button class="btn btn-social btn-twitter btn-round sharrre" id="twitter"><i class="fa fa-twitter"></i> · 45</button>
-                        <button class="btn btn-social btn-facebook btn-round sharrre" id="facebook"><i class="fa fa-facebook-square"></i> · 50</button>
                     </li>
                 </ul>
         </div>
@@ -262,5 +249,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
 {% endblock %}

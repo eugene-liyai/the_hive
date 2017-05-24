@@ -92,7 +92,6 @@
 .sidebar .sidebar-header {
   position: relative;
   height: 157.5px;
-  margin-bottom: 8px;
   -webkit-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -258,9 +257,33 @@
   margin: 0;
   padding: 0;
 }
+
+.sidebar-nav {
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.sidebar-nav-1 {
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-1.jpg);
+}
+
+.sidebar-nav-2 {
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-2.jpg);
+}
+
+.sidebar-nav-3 {
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-3.jpg);
+}
+
+.sidebar-nav-4 {
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-4.jpg);
+}
+
+
 .sidebar .sidebar-nav li {
   position: relative;
   list-style-type: none;
+    color: #c3c1c1;
 }
 .sidebar .sidebar-nav li a {
   position: relative;
@@ -343,11 +366,11 @@
   color: #212121;
 }
 .sidebar-default .sidebar-nav li > a {
-  color: #212121;
+  color: #ffffff;
   background-color: transparent;
 }
 .sidebar-default .sidebar-nav li > a i {
-  color: #757575;
+  color: #c3c1c1;
 }
 .sidebar-default .sidebar-nav li:hover > a,
 .sidebar-default .sidebar-nav li > a:hover {
@@ -734,7 +757,7 @@
 
 .fixed-plugin {
     position: fixed;
-    top: 180px;
+    top: 130px;
     right: 0;
     width: 64px;
     background: rgba(0,0,0,.3);
