@@ -64,14 +64,8 @@ def drop_tables():
 
 
 @login_manager.user_loader
-def load_user(userid):
-    return Users.query.get(int(userid))
-
-
-def index():
-    if current_user:
-        return render_template('dashboard.html', user=current_user)
-    return render_template('index.html')
+def load_user(user_id):
+    return DATA_CONTROLLER.get_user_by_id(user_id)[0]
 
 
 def login():
@@ -93,13 +87,21 @@ def login():
                 user = validation_return['User']
                 login_user(user, True)
                 flash("Logged in successfully as {}".format(user.email))
-                return redirect(request.args.get('next') or url_for('index', username=user.email))
+                return redirect(request.args.get('next') or url_for('index'))
             flash('Incorrect email or password')
         return render_template("index.html")
     except Exception as e:
         print(e)
         flash('Error communicating with the server')
-        return render_template("login.html")
+        return render_template("index.html")
+
+
+@login_required
+def index():
+    if current_user:
+        agents = DATA_CONTROLLER.get_user_by_id()
+        return render_template('userJobs.html', user=current_user, users=agents)
+    return render_template('index.html')
 
 
 @login_required

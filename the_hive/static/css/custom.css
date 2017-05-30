@@ -1,0 +1,13 @@
+.btn,
+.btn-primary,
+.btn-info,
+.btn-danger,
+.btn-warning {
+    border: none;
+    border-radius: 5px;
+}
+
+.add-btn {
+    padding: 7px;
+    width: 150px;
+}

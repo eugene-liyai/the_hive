@@ -13,10 +13,11 @@
 
 {% block content %}
     <!-- Overlay for fixed sidebar -->
+<div class="container">
     <div class="sidebar-overlay"></div>
 
     <!-- Material sidebar -->
-    <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
+    <aside id="sidebar" class="sidebar sidebar-default open col-md-3 sidebar-positioning" role="navigation">
         <!-- Sidebar header -->
         <div class="sidebar-header header-cover" style="background-image: url(http://2.bp.blogspot.com/-2RewSLZUzRg/U-9o6SD4M6I/AAAAAAAADIE/voax99AbRx0/s1600/14%2B-%2B1%2B%281%29.jpg);">
             <!-- Top bar -->
@@ -66,6 +67,12 @@
                 <a href="#">
                     <i class="sidebar-icon md-inbox"></i>
                     Inbox
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="sidebar-icon md-inbox"></i>
+                    Inbox Two
                 </a>
             </li>
             <li>
@@ -139,77 +146,14 @@
                 <i class="fa fa-cog fa-2x"> </i>
             </a>
             <ul class="dropdown-menu">
-                    <li class="header-title"> Sidebar Filters</li>
-                    <li class="adjustments-line">
-                        <a class="switch-trigger active-color" href="javascript:void(0)">
-                            <div class="badge-colors text-center">
-                                <span class="badge filter badge-purple" data-color="purple"></span>
-                                <span class="badge filter badge-blue" data-color="blue"></span>
-                                <span class="badge filter badge-green" data-color="green"></span>
-                                <span class="badge filter badge-orange" data-color="orange"></span>
-                                <span class="badge filter badge-red" data-color="red"></span>
-                                <span class="badge filter badge-white active" data-color="white"></span>
-                                <span class="badge filter badge-rose" data-color="rose"></span>
-                            </div>
-                            <div class="clearfix"></div>
-                        </a>
-                    </li>
-                    <li class="header-title">Controls</li>
+                    <li class="header-title">Toggle nav</li>
 
                     <div class="wrapper">
                         <!-- Sidebar Constructor -->
-                        <div class="constructor">
-                            <p>
-                                <label for="sidebar-position">Sidebar postion</label>
-                                <select id="sidebar-position" name="sidebar-position">
-                                    <option value="">Default</option>
-                                    <option value="sidebar-fixed-left">Float on left</option>
-                                    <option value="sidebar-fixed-right">Float on right</option>
-                                    <option value="sidebar-stacked">Stacked on left</option>
-                                </select>
-                            </p>
-                            <p>
-                                <label for="sidebar-theme">Sidebar theme</label>
-                                <select id="sidebar-theme" name="sidebar-theme">
-                                    <option value="sidebar-default">Default</option>
-                                    <option value="sidebar-inverse">Inverse</option>
-                                    <option value="sidebar-colored">Colored</option>
-                                    <option value="sidebar-colored-inverse">Colored-Inverse</option>
-                                </select>
-                            </p>
-                            <p>
-                                <label for="sidebar-header">Sidebar header cover</label>
-                                <select id="sidebar-header" name="sidebar-header">
-                                    <option value="header-cover">Image cover</option>
-                                    <option value="">Color cover</option>
-                                </select>
-                            </p>
-                            <p><button class="sidebar-toggle">Toggle sidebar</button></p>
+                        <div class="constructor col-md-12 text-center">
+                            <p><button class="sidebar-toggle btn btn-sm btn-primary" href="javascript:void(0)">Toggle sidebar</button></p>
                         </div>
                     </div>
-
-                    <li class="header-title">Sidebar Background</li>
-                    <li class="adjustments-line">
-                        <a class="switch-trigger background-color" href="javascript:void(0)">
-                            <div class="text-center">
-                                <span class="badge filter badge-white" data-color="white"></span>
-                                <span class="badge filter badge-black active" data-color="black"></span>
-                                <span class="badge filter badge-red" data-color="red"></span>
-                            </div>
-                            <div class="clearfix"></div>
-                        <div class="ripple-container"></div></a>
-                    </li>
-                    <li class="adjustments-line">
-                        <a class="switch-trigger" href="javascript:void(0)">
-                            <p>Sidebar Mini</p>
-                            <div class="togglebutton switch-sidebar-mini">
-                                <label>
-                                    <input type="checkbox" unchecked=""><span class="toggle"></span>
-                                </label>
-                            </div>
-                            <div class="clearfix"></div>
-                        </a>
-                    </li>
                     <li class="adjustments-line">
                         <a class="switch-trigger" href="javascript:void(0)">
                             <p>Sidebar Image</p>
@@ -246,7 +190,14 @@
         </div>
     </div>
     <!-- End settings toggle button -->
+
+    <div class="col-md-9">
+        {%block userjobs%}
+        {%endblock%}
+    </div>
+    </div>
 {% endblock %}
+
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>

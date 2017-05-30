@@ -1,0 +1,50 @@
+#user_jobs_table_wrapper {
+    margin-top: 40px;
+}
+
+.pagination {
+    border: 1px solid #2c3e50;
+    float: right;
+    margin: 0;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    z-index: 3;
+    color: #ffffff;
+    background-color: #2c3e50;
+    border-color: transparent;
+    cursor: default;
+}
+
+.pagination > li > a, .pagination > li > span {
+    position: relative;
+    float: left;
+    padding: 10px 15px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    border: 1px solid #2c3e50;
+    margin-left: -1px;
+}
+
+#user_jobs_table_filter {
+    float: right;
+}
+
+#user_jobs_table_filter input[type="search"] {
+    margin-left: 10px;
+}
+
+.thead-inverse {
+    background: #2c3e50;
+    color: #ffffff;
+}
+
+.add_job_div {
+    top: 41px;
+    left: -15px;
+}
