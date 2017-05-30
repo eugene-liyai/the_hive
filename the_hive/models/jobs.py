@@ -10,7 +10,8 @@ Desc      : Model class that creates jobs and connects to database
 # ============================================================================
 from datetime import datetime
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Date, Boolean, Text
+from sqlalchemy import Column, String, Integer, Date, Boolean, Text
+from sqlalchemy.orm import relationship
 
 from the_hive.models.db_model import Model
 
@@ -27,7 +28,7 @@ class Jobs(Model):
     paid = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
     description = Column(Text)
-    user = Column(Integer, ForeignKey('Users.user_id'))
+    user = relationship("Users", backref="Jobs")
 
     def serialize(self):
         """
