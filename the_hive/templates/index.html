@@ -26,6 +26,14 @@
     <!-- tab content -->
     <div id="wea" class="col-sm-7 tab-content nav-slider-container">
 
+        <div class="row">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class = "alert alert-info">{{message}}</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <div class="tab-pane active text-style fade in active" id="tab1">
             <h2><i class="fa fa-lock" aria-hidden="true"></i> Hive login panel</h2>
             <p>This application is free to use</p>

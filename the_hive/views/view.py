@@ -98,9 +98,11 @@ def login():
 
 @login_required
 def index():
-    if current_user:
+    if current_user.role == 'ROLE_ADMIN':
         agents = DATA_CONTROLLER.get_user_by_id()
-        return render_template('userJobs.html', user=current_user, users=agents)
+        return render_template('adminUserJobs.html', user=current_user, users=agents)
+    elif current_user.role == 'ROLE_AGENT':
+        return render_template('userJobs.html', user=current_user)
     return render_template('index.html')
 
 

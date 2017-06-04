@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
 {% endblock %}
 
@@ -24,12 +25,11 @@
         <th>Description</th>
         <th>Duration</th>
         <th>Paid</th>
-        <th>Action</th>
     </tr>
   </thead>
       <tbody>
       {% for job in user.user_detail %}
-        <tr>
+        <tr data-toggle="modal" data-target="#view_{{job.job_details_id}}">
           <td>{{job.job}}</td>
           <td>{{job.date_created}}</td>
           <td>{{job.description}}</td>
@@ -41,27 +41,34 @@
                 <i class="fa fa-check-circle-o text-success"></i>
               {% endif %}
           </td>
-          <td>
-              <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{job.job_details_id}}"><i class="fa fa-edit"></i></a>
-              <a class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
-          </td>
         </tr>
 
-      <!-- Modal edit edit job -->
-      <div class="modal fade" id=edit_{{job.job_details_id}} role="dialog">
+      <!-- Modal view job -->
+      <div class="modal fade" id=view_{{job.job_details_id}} role="dialog">
           <div class="modal-dialog">
 
             <!-- Modal content-->
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Job id {{job.job_details_id}}</h4>
+                <h4 class="modal-title"><i class="fa fa-file"></i> Job {{job.job}} breakdown</h4>
               </div>
               <div class="modal-body">
-                <p>Some text in the modal.</p>
+                  <div class="job-container">
+                      <h4><i class="fa fa-file-o"></i> Job ID: {{job.job}}</h4>
+                      <h6><i class="fa fa-info"></i> Item No: {{job.job_details_id}}</h6>
+                      <p class="description">This is a dummy text to describe how the file is expected to display the description</p>
+                      <p><i class="fa fa-clock-o"></i> Duration <span>15 min</span></p>
+                      <p><i class="fa fa-quote-left"></i> Verbatim <span class="label label-success">True</span></p>
+                      <p><i class="fa fa-minus-circle"></i> Timestamp <span class="label label-warning">False</span></p>
+                      <p><i class="fa fa-calendar"></i> Date uploaded <span>4 hrs ago</span></p>
+                      <p><i class="fa fa-money"></i> Paid <span class="label label-default"><i class="fa-times-circle-o text-warning"></i></span></p>
+                      <p><i class="fa fa-calendar-check-o"></i> Completed <span>1 min ago</span></p>
+                      <p><i class="fa fa-user"></i> Assigned to <span>John Doe</span></p>
+                  </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
               </div>
             </div>
 
