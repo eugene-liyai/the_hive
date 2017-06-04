@@ -57,5 +57,5 @@ class Users(Model, UserMixin):
             "date_added": self.date.isoformat() if self.date_added else "",
             "date_modified": self.date.isoformat() if self.date_modified else "",
             "role": self.role,
-            "jobs": [job.serialize() for job in self.jobs]
+            "job_details": [job.serialize() for job in self.user_detail]
         }

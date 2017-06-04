@@ -23,12 +23,16 @@
 
 .pagination > li > a, .pagination > li > span {
     position: relative;
+    background-color: #20ac98;
     float: left;
     padding: 10px 15px;
     line-height: 1.42857143;
     text-decoration: none;
-    border: 1px solid #2c3e50;
     margin-left: -1px;
+}
+
+.pagination > li > a:hover, .pagination > li > span:hover {
+    background-color: #21b9a5;
 }
 
 #user_jobs_table_filter {
@@ -48,3 +52,8 @@
     top: 41px;
     left: -15px;
 }
+
+.hidden-row-style{
+    padding: 0;
+}
+#user_jobs_table td{border-top:0px !important; border-right:1px solid #fff !important;}

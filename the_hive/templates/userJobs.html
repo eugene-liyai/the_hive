@@ -10,36 +10,68 @@
 
 {% block userjobs%}
 {% if user.role == 'ROLE_ADMIN' %}{% endif %}
-<div class="col-sm-6 add_job_div">
-    <div class="dataTables_length">
-        <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i>  Add</button>
-    </div>
-</div>
+<!--<div class="col-sm-6 add_job_div">-->
+    <!--<div class="dataTables_length">-->
+        <!--<button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i>  Add</button>-->
+    <!--</div>-->
+<!--</div>-->
 
 <table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
   <thead class="thead-inverse">
     <tr>
-      <th>Job ID</th>
-      <th>Job Name</th>
-      <th>Date Added</th>
-      <th>Completed</th>
-      <th>Paid</th>
+        <th>Job ID</th>
+        <th>Date Added</th>
+        <th>Description</th>
+        <th>Duration</th>
+        <th>Paid</th>
+        <th>Action</th>
     </tr>
   </thead>
-    {% for job in user.jobs %}
       <tbody>
+      {% for job in user.user_detail %}
         <tr>
-          <td>{{job.job_id}}</td>
-          <td>{{job.job_name}}</td>
+          <td>{{job.job}}</td>
           <td>{{job.date_created}}</td>
-          <td>{{job.competed}}</td>
-          <td>{{job.paid}}</td>
+          <td>{{job.description}}</td>
+          <td>{{job.duration}}</td>
+          <td>
+              {% if job.paid == False %}
+                <i class="fa fa-times-circle-o text-warning"></i>
+              {% else %}
+                <i class="fa fa-check-circle-o text-success"></i>
+              {% endif %}
+          </td>
+          <td>
+              <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{job.job_details_id}}"><i class="fa fa-edit"></i></a>
+              <a class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
+          </td>
         </tr>
+
+      <!-- Modal edit edit job -->
+      <div class="modal fade" id=edit_{{job.job_details_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Job id {{job.job_details_id}}</h4>
+              </div>
+              <div class="modal-body">
+                <p>Some text in the modal.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+      </div>
+      {% endfor %}
       </tbody>
-    {% endfor %}
 </table>
 
-<!-- Modal -->
+<!-- Modal add job-->
   <div class="modal fade" id="add_job" role="dialog">
     <div class="modal-dialog">
 

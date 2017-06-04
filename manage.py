@@ -17,6 +17,7 @@ manager = Manager(app)
 
 @manager.command
 def initdb():
+
     init_bucketlist_database()
 
 
