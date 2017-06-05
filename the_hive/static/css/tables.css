@@ -57,3 +57,7 @@
     padding: 0;
 }
 #user_jobs_table td{border-top:0px !important; border-right:1px solid #fff !important;}
+
+.btn.active {
+	display: none;
+}
