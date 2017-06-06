@@ -32,33 +32,33 @@
             </div>
             <!-- Sidebar brand name -->
             <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
-                john.doe@gmail.com
+                <i class="fa fa-envelope"></i> {{user.email}}
                 <b class="caret"></b>
             </a>
         </div>
 
         <!-- Sidebar navigation -->
-        <ul class="nav sidebar-nav sidebar-nav-1">
+        <ul class="nav sidebar-nav">
             <li class="dropdown">
                 <ul id="settings-dropdown" class="dropdown-menu">
                     <li>
                         <a href="#" tabindex="-1">
-                            Profile
+                            <i class="fa fa-user"></i> Profile
                         </a>
                     </li>
                     <li>
                         <a href="#" tabindex="-1">
-                            Settings
+                            <i class="fa fa-hourglass-start"></i> Set Availability
                         </a>
                     </li>
                     <li>
                         <a href="#" tabindex="-1">
-                            Help
+                           <i class="fa fa-question"></i> Help
                         </a>
                     </li>
                     <li>
                         <a href="#" tabindex="-1">
-                            Exit
+                           <i class="fa fa-sign-out"></i> Logout
                         </a>
                     </li>
                 </ul>
@@ -66,31 +66,25 @@
             <li>
                 <a href="#">
                     <i class="sidebar-icon md-inbox"></i>
-                    Inbox
+                    Jobs Items
                 </a>
             </li>
             <li>
                 <a href="#">
                     <i class="sidebar-icon md-inbox"></i>
-                    Inbox Two
+                    Jobs
                 </a>
             </li>
             <li>
                 <a href="#">
                     <i class="sidebar-icon md-star"></i>
-                    Starred
+                    List Users
                 </a>
             </li>
             <li>
                 <a href="#">
                     <i class="sidebar-icon md-send"></i>
-                    Sent Mail
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="sidebar-icon md-drafts"></i>
-                    Drafts
+                    Rates
                 </a>
             </li>
             <li class="divider"></li>
@@ -133,11 +127,6 @@
                 </a>
             </li>
         </ul>
-        <!-- Sidebar divider -->
-        <!-- <div class="sidebar-divider"></div> -->
-
-        <!-- Sidebar text -->
-        <!--  <div class="sidebar-text">Text</div> -->
     </aside>
 
     <div class="fixed-plugin">

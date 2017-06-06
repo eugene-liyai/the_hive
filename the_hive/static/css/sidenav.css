@@ -263,26 +263,10 @@
 }
 
 .sidebar-nav {
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-1.jpg);
     background-repeat: no-repeat;
     background-size: cover;
 }
-
-.sidebar-nav-1 {
-    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-1.jpg);
-}
-
-.sidebar-nav-2 {
-    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-2.jpg);
-}
-
-.sidebar-nav-3 {
-    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-3.jpg);
-}
-
-.sidebar-nav-4 {
-    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-4.jpg);
-}
-
 
 .sidebar .sidebar-nav li {
   position: relative;
@@ -350,16 +334,17 @@
   background-color: transparent;
 }
 .sidebar-default .sidebar-brand {
-  color: #757575;
+  color: #ffffff;
   background-color: transparent;
+  font-size: 13px;
 }
 .sidebar-default .sidebar-brand:hover,
 .sidebar-default .sidebar-brand:focus {
-  color: #212121;
+  color: #d6d6d6;
   background-color: rgba(0, 0, 0, 0.1);
 }
 .sidebar-default .sidebar-badge {
-  color: #ffffff;
+  color: #757575;
   background-color: #bdbdbd;
 }
 .sidebar-default .sidebar-divider,
@@ -374,7 +359,11 @@
   background-color: transparent;
 }
 .sidebar-default .sidebar-nav li > a i {
-  color: #c3c1c1;
+  color: #fff;
+}
+#settings-dropdown li > a i {
+  color: #fff;
+  margin-right: 40px;
 }
 .sidebar-default .sidebar-nav li:hover > a,
 .sidebar-default .sidebar-nav li > a:hover {
@@ -999,6 +988,12 @@
      transform-origin: 0 0;
 }
 
+
+#settings-dropdown{
+  background: rgba(0, 0, 0, 0);
+  border-bottom: 1px solid #20ac98;
+}
+
 .fixed-plugin .dropdown-menu:before,
 .fixed-plugin .dropdown-menu:after{
     content: "";
@@ -1032,4 +1027,8 @@
 
 .sidebar-positioning {
   left: -85px;
+}
+
+button .fa-chevron-left {
+  color: #ffffff;
 }
