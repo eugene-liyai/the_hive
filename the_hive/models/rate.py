@@ -11,11 +11,11 @@ Desc      : Model class that creates rates and connects to database
 
 from sqlalchemy import Column, Integer, Text
 
-from db_model import Model
+from the_hive.models.db_model import Model
 
 
 class Rate(Model):
-    __tablename__ = 'Jobs'
+    __tablename__ = 'Rate'
     rate_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     rate = Column(Integer, nullable=False)
     description = Column(Text, nullable=False)

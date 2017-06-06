@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+{% endblock %}
+
+{% block title %}
+    the-hive dashboard
+{% endblock %}
+
+
+{% block content %}
+    <!-- Overlay for fixed sidebar -->
+<div class="container">
+    <div class="sidebar-overlay"></div>
+
+    <!-- Material sidebar -->
+    <aside id="sidebar" class="sidebar sidebar-default open col-md-3 sidebar-positioning" role="navigation">
+        <!-- Sidebar header -->
+        <div class="sidebar-header header-cover" style="background-image: url(http://2.bp.blogspot.com/-2RewSLZUzRg/U-9o6SD4M6I/AAAAAAAADIE/voax99AbRx0/s1600/14%2B-%2B1%2B%281%29.jpg);">
+            <!-- Top bar -->
+            <div class="top-bar"></div>
+            <!-- Sidebar toggle button -->
+            <button type="button" class="sidebar-toggle">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <!-- Sidebar brand image -->
+            <div class="sidebar-image">
+                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/53474/atom_profile_01.jpg">
+            </div>
+            <!-- Sidebar brand name -->
+            <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
+                <i class="fa fa-envelope"></i> {{user.email}}
+                <b class="caret"></b>
+            </a>
+        </div>
+
+        <!-- Sidebar navigation -->
+        <ul class="nav sidebar-nav">
+            <li class="dropdown">
+                <ul id="settings-dropdown" class="dropdown-menu">
+                    <li>
+                        <a href="#" tabindex="-1">
+                            <i class="fa fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" tabindex="-1">
+                            <i class="fa fa-hourglass-start"></i> Set Availability
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" tabindex="-1">
+                           <i class="fa fa-question"></i> Help
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" tabindex="-1">
+                           <i class="fa fa-sign-out"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="sidebar-icon md-inbox"></i>
+                    Jobs Items
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="sidebar-icon md-inbox"></i>
+                    Jobs
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="sidebar-icon md-star"></i>
+                    List Users
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="sidebar-icon md-send"></i>
+                    Rates
+                </a>
+            </li>
+            <li class="divider"></li>
+
+        </ul>
+    </aside>
+
+    <div class="fixed-plugin">
+        <div class="dropdown show-dropdown">
+            <a data-toggle="dropdown" href="" aria-expanded="false">
+                <i class="fa fa-cog fa-2x"> </i>
+            </a>
+            <ul class="dropdown-menu">
+                    <li class="header-title">Toggle nav</li>
+
+                    <div class="wrapper">
+                        <!-- Sidebar Constructor -->
+                        <div class="constructor col-md-12 text-center">
+                            <p><button class="sidebar-toggle btn btn-sm btn-primary" href="javascript:void(0)">Toggle sidebar</button></p>
+                        </div>
+                    </div>
+                    <li class="adjustments-line">
+                        <a class="switch-trigger" href="javascript:void(0)">
+                            <p>Sidebar Image</p>
+                            <div class="togglebutton switch-sidebar-image">
+                                <label>
+                                    <input checked="" type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </a>
+                    </li>
+                    <li class="header-title">Images</li>
+                    <li class="active">
+                        <a class="img-holder switch-trigger" href="javascript:void(0)">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-1.jpg') }}">
+                        </a>
+                    </li>
+                    <li>
+                        <a class="img-holder switch-trigger" href="javascript:void(0)">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-2.jpg') }}">
+                        </a>
+                    </li>
+                    <li>
+                        <a class="img-holder switch-trigger" href="javascript:void(0)">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-3.jpg') }}">
+                        </a>
+                    </li>
+                    <li>
+                        <a class="img-holder switch-trigger" href="javascript:void(0)">
+                            <img alt="" src="{{ url_for('static', filename='images/sidebar-4.jpg') }}">
+                        </a>
+                    </li>
+                </ul>
+        </div>
+    </div>
+    <!-- End settings toggle button -->
+
+    <div class="col-md-9">
+        {%block userjobs%}
+        {%endblock%}
+    </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+{% endblock %}

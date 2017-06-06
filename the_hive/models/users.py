@@ -11,11 +11,11 @@ Desc      : Model class that creates users and connects to database
 from datetime import datetime
 
 from flask_login import UserMixin
-from sqlalchemy import Column, String, Integer, Numeric, Date, desc
+from sqlalchemy import Column, String, Integer, Date
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
 
-from db_model import Model
+from the_hive.models.db_model import Model
 
 
 class Users(Model, UserMixin):
@@ -28,7 +28,7 @@ class Users(Model, UserMixin):
     date_added = Column(Date, default=datetime.utcnow)
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
-    jobs = relationship('Jobs', backref="Users")
+    user_detail = relationship("JobsDetails", backref="Users")
 
     def get_id(self):
         return self.user_id
@@ -57,5 +57,5 @@ class Users(Model, UserMixin):
             "date_added": self.date.isoformat() if self.date_added else "",
             "date_modified": self.date.isoformat() if self.date_modified else "",
             "role": self.role,
-            "jobs": [job.serialize() for job in self.jobs]
+            "job_details": [job.serialize() for job in self.user_detail]
         }

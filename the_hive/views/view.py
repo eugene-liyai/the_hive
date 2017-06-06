@@ -12,7 +12,6 @@ import os
 from math import ceil
 
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 from flask import render_template, url_for, request, redirect, flash, abort
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -65,15 +64,8 @@ def drop_tables():
 
 
 @login_manager.user_loader
-def load_user(userid):
-    return Users.query.get(int(userid))
-
-
-def index():
-    if current_user:
-        return render_template('dashboard.html', user=current_user)
-    else:
-        return render_template('index.html')
+def load_user(user_id):
+    return DATA_CONTROLLER.get_user_by_id(user_id)[0]
 
 
 def login():
@@ -94,15 +86,27 @@ def login():
             if validation_return['status']:
                 user = validation_return['User']
                 login_user(user, True)
-                flash("Logged in successfully as {}".format(user.username))
-                return redirect(request.args.get('next') or url_for('user', username=user.username))
+                flash("Logged in successfully as {}".format(user.email))
+                return redirect(request.args.get('next') or url_for('index'))
             flash('Incorrect email or password')
-        return render_template("login.html")
-    except:
+        return render_template("index.html")
+    except Exception as e:
+        print(e)
         flash('Error communicating with the server')
-        return render_template("login.html")
+        return render_template("index.html")
 
 
+@login_required
+def index():
+    if current_user.role == 'ROLE_ADMIN':
+        agents = DATA_CONTROLLER.get_user_by_id()
+        return render_template('adminUserJobs.html', user=current_user, users=agents)
+    elif current_user.role == 'ROLE_AGENT':
+        return render_template('userJobs.html', user=current_user)
+    return render_template('index.html')
+
+
+@login_required
 def logout():
     """
 

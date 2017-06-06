@@ -14,6 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from the_hive.models.users import Users
 from the_hive.models.jobs import Jobs
 from the_hive.models.rate import Rate
+from the_hive.models.job_details import JobsDetails
 from the_hive.models.initialize_db import init_bucketlist_database, drop_bucketlist_database
 
 
@@ -445,46 +446,145 @@ class DatabaseController:
                     verbatim=None,
                     timestamp=None,
                     duration=30,
-                    description='From 10min to 40min',
-                    user=user1.user_id)
+                    description='first job give to one person')
 
         job2 = Jobs(job_id='0104SG1SDYE3',
                     job_name='Second test job',
                     verbatim=None,
                     timestamp=True,
                     duration=10,
-                    description='From 0min to 10min',
-                    user=user1.user_id)
+                    description='From 0min to 10min')
 
         job3 = Jobs(job_id='010DOISDU733',
                     job_name='Third test job',
                     verbatim=True,
                     timestamp=True,
                     duration=50,
-                    description='From 0min to 50min',
-                    user=user1.user_id)
+                    description='From 0min to 50min')
 
         job4 = Jobs(job_id='01032DISDU733',
                     job_name='fOURTH test job',
                     verbatim=True,
                     timestamp=True,
                     duration=50,
-                    description='From 0min to 50min',
-                    user=user2.user_id)
+                    description='From 0min to 50min')
 
         job5 = Jobs(job_id='KSFFU9EHDU998',
                     job_name='Third test job',
                     verbatim=True,
                     timestamp=False,
                     duration=18,
-                    description='From 0min to 18min',
-                    user=user2.user_id)
+                    description='From 0min to 18min')
 
         self.session.add(job1)
         self.session.add(job2)
         self.session.add(job3)
         self.session.add(job4)
         self.session.add(job5)
+        self.session.commit()
+
+        #
+        # Job Details
+        #
+
+        job_details1 =JobsDetails(duration=30,
+                                  job_name=job4.job_name,
+                                  description='from min 10 to min 40',
+                                  user=user1.user_id,
+                                  job=job4.job_id)
+
+        job_details2 = JobsDetails(duration=10,
+                                   job_name=job2.job_name,
+                                   description='whole file',
+                                   user=user1.user_id,
+                                   job=job2.job_id)
+
+        job_details3 = JobsDetails(duration=10,
+                                   job_name=job4.job_name,
+                                   description='from min 40 to min 50',
+                                   user=user2.user_id,
+                                   job=job4.job_id)
+
+        job_details4 = JobsDetails(duration=10,
+                                   job_name=job4.job_name,
+                                   description='from min 0 to min 10',
+                                   user=user2.user_id,
+                                   job=job4.job_id)
+
+        job_details5 = JobsDetails(duration=30,
+                                   job_name=job1.job_name,
+                                   description='whole file',
+                                   user=user2.user_id,
+                                   job=job1.job_id)
+
+        job_details6 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='0 to 5 min',
+                                   user=user2.user_id,
+                                   job=job3.job_id)
+
+        job_details7 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='5 to 10 min',
+                                   user=user2.user_id,
+                                   job=job3.job_id)
+
+        job_details8 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='10 to 15 min',
+                                   user=user2.user_id,
+                                   job=job3.job_id)
+
+        job_details9 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='15 to 20 min',
+                                   user=user2.user_id,
+                                   job=job3.job_id)
+
+        job_details10 = JobsDetails(duration=10,
+                                    job_name=job3.job_name,
+                                    description='20 to 30 min',
+                                    user=user2.user_id,
+                                    job=job3.job_id)
+
+        job_details11 = JobsDetails(duration=10,
+                                    job_name=job3.job_name,
+                                    description='30 to 40 min',
+                                    user=user2.user_id,
+                                    job=job3.job_id)
+
+        job_details12 = JobsDetails(duration=5,
+                                    job_name=job3.job_name,
+                                    description='40 to 45 min',
+                                    user=user2.user_id,
+                                    job=job3.job_id)
+
+        job_details13 = JobsDetails(duration=5,
+                                    job_name=job3.job_name,
+                                    description='45 to 50 min',
+                                    user=user2.user_id,
+                                    job=job3.job_id)
+
+        job_details14 = JobsDetails(duration=18,
+                                    job_name=job5.job_name,
+                                    description='whole file',
+                                    user=user2.user_id,
+                                    job=job5.job_id)
+
+        self.session.add(job_details1)
+        self.session.add(job_details2)
+        self.session.add(job_details3)
+        self.session.add(job_details4)
+        self.session.add(job_details5)
+        self.session.add(job_details6)
+        self.session.add(job_details7)
+        self.session.add(job_details8)
+        self.session.add(job_details9)
+        self.session.add(job_details10)
+        self.session.add(job_details11)
+        self.session.add(job_details12)
+        self.session.add(job_details13)
+        self.session.add(job_details14)
         self.session.commit()
 
         #
