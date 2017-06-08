@@ -199,6 +199,24 @@ def users(user_id):
 
 
 @login_required
+def profile():
+    """
+    
+    The method returns the logged in user credentials
+    
+    :return: returns user information
+    """
+
+    if current_user.user_id:
+        user = DATA_CONTROLLER.get_user_by_id(user_id=current_user.user_id, serialize=True)
+
+        if len(user):
+            return render_template('profile.html', user=user)
+        else:
+            return abort(500)
+
+
+@login_required
 def update_users(user_id):
     """
 

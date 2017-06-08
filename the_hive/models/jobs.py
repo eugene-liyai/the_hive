@@ -42,7 +42,7 @@ class Jobs(Model):
             "timestamp": self.timestamp,
             "duration": self.duration,
             "description": self.description,
-            "date_created": self.date.isoformat() if self.date_created else "",
-            "date_completed": self.date.isoformat() if self.date_completed else "",
+            "date_created": self.date_created.isoformat() if self.date_created else "",
+            "date_completed": self.date_completed.isoformat() if self.date_completed else "",
             "job_details": [job.serialize() for job in self.job_detail]
         }
