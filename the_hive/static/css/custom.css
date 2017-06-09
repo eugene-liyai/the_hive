@@ -11,7 +11,7 @@
     padding: 7px;
     width: 150px;
     margin-bottom: 10px;
-}
+}z
 
 .badgebox {
     opacity: 0;
@@ -36,4 +36,15 @@
 .badgebox:checked + .badge {
     /* Move the check mark back when checked */
 	text-indent: 0;
+}
+
+.profile-well {
+    border-radius: 10px;
+    margin-top: 40px;
+    border: 1px solid #2c3e50;
+}
+
+.bottom-line {
+    border-bottom: 1px solid #2c3e50;
+    margin: 10px 0;
 }

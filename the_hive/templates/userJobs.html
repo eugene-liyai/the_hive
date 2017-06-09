@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
 {% endblock %}
 
-{% block userjobs%}
+{% block dashboard_content%}
 {% if user.role == 'ROLE_ADMIN' %}{% endif %}
 <!--<div class="col-sm-6 add_job_div">-->
     <!--<div class="dataTables_length">-->

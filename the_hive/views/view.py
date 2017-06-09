@@ -211,7 +211,7 @@ def profile():
         user = DATA_CONTROLLER.get_user_by_id(user_id=current_user.user_id, serialize=True)
 
         if len(user):
-            return render_template('profile.html', user=user)
+            return render_template('profile.html', user=user[0])
         else:
             return abort(500)
 

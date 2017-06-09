@@ -7,155 +7,150 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
 {% endblock %}
 
-{% block profiles %}
+{% block dashboard_content %}
     <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-6">
-            <div class="well well-sm">
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
-                        <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+                        <img src="{{ url_for('static', filename='images/the-hive-logo.png') }}" alt="the-hive logo" class="img-rounded img-responsive" />
                     </div>
                     <div class="col-sm-6 col-md-8">
-                        <h4>
-                            Bhaumik Patel</h4>
-                        <small><cite title="San Francisco, USA">San Francisco, USA <i class="glyphicon glyphicon-map-marker">
-                        </i></cite></small>
+                        <h3>
+                            {{user.first_name}} {{user.last_name}}
+                        </h3>
+                        <cite title="San Francisco, USA"> <i class="fa fa-cogs"></i> <strong>Account - </strong>
+                            {% if user.role == 'ROLE_AGENT' %}
+                            Agent
+                            {% else %}
+                            Admin
+                            {% endif %}
+                            </cite>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
                         <p>
-                            <i class="glyphicon glyphicon-envelope"></i>email@example.com
+                            <i class="fa fa-envelope"></i> <strong>Email</strong> - {{user.email}}
                             <br />
-                            <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.jquery2dotnet.com</a>
+                            <i class="fa fa-hashtag"></i> <strong>User ID</strong> - {{user.user_id}}
                             <br />
-                            <i class="glyphicon glyphicon-gift"></i>June 02, 1988</p>
+                            <i class="fa fa-calendar"></i> <strong>Date Added</strong> - {{user.date_added}}</p>
                         <!-- Split button -->
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary">
-                                Social</button>
+                            <button type="button" class="btn btn-primary" data-toggle="dropdown">
+                                Account actions</button>
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span><span class="sr-only">Social</span>
+                                <span class="caret"></span><span class="sr-only">Actions</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Twitter</a></li>
-                                <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                                <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#edit_password_info">Change Password</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#edit_user_info" >Edit account</a></li>
+                                <li><a href="#" >Account Stats</a></li>
                                 <li class="divider"></li>
-                                <li><a href="#">Github</a></li>
+                                <li><a href="#">Set Availability</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-6">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-sm-6 col-md-4">
-                        <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
-                    </div>
-                    <div class="col-sm-6 col-md-8">
-                        <h4>
-                            Bhaumik Patel</h4>
-                        <small><cite title="San Francisco, USA">San Francisco, USA <i class="glyphicon glyphicon-map-marker">
-                        </i></cite></small>
-                        <p>
-                            <i class="glyphicon glyphicon-envelope"></i>email@example.com
-                            <br />
-                            <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.jquery2dotnet.com</a>
-                            <br />
-                            <i class="glyphicon glyphicon-gift"></i>June 02, 1988</p>
-                        <!-- Split button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary">
-                                Social</button>
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span><span class="sr-only">Social</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Twitter</a></li>
-                                <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                                <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Github</a></li>
-                            </ul>
+
+        <!-- Modal edit account info-->
+    <div class="modal fade" id="edit_user_info" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title"><i class="fa fa-info"></i> Edit User Info</h4>
+            </div>
+              <form class="form-horizontal" action="/admin/add_job" method="post">
+                  <fieldset>
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_first_name">First Name</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_first_name" id="edit_first_name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_last_name">Last Name</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_last_name" id="edit_last_name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_email">Email</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_email" id="edit_email">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-6">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-sm-6 col-md-4">
-                        <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary" data-dismiss="modal">
+                          <i class="fa fa-send"></i>
+                           Submit
+                      </button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">
+                          <i class="fa fa-close"></i>
+                           Close
+                      </button>
                     </div>
-                    <div class="col-sm-6 col-md-8">
-                        <h4>
-                            Bhaumik Patel</h4>
-                        <small><cite title="San Francisco, USA">San Francisco, USA <i class="glyphicon glyphicon-map-marker">
-                        </i></cite></small>
-                        <p>
-                            <i class="glyphicon glyphicon-envelope"></i>email@example.com
-                            <br />
-                            <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.jquery2dotnet.com</a>
-                            <br />
-                            <i class="glyphicon glyphicon-gift"></i>June 02, 1988</p>
-                        <!-- Split button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary">
-                                Social</button>
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span><span class="sr-only">Social</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Twitter</a></li>
-                                <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                                <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Github</a></li>
-                            </ul>
+                  </fieldset>
+              </form>
+          </div>
+
+        </div>
+      </div>
+
+        <div class="modal fade" id="edit_password_info" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title"><i class="fa fa-lock"></i> Change Password</h4>
+            </div>
+              <form class="form-horizontal" action="/admin/add_job" method="post">
+                  <fieldset>
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="current_password">Current Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="text" name="current_password" id="current_password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="new_password">New Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="text" name="new_password" id="new_password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="confirm_new_password">Confirm New Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="text" name="confirm_new_password" id="confirm_new_password">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-6">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-sm-6 col-md-4">
-                        <img src="http://placehold.it/380x500" alt="" class="img-rounded img-responsive" />
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary" data-dismiss="modal">
+                          <i class="fa fa-send"></i>
+                           Submit
+                      </button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">
+                          <i class="fa fa-close"></i>
+                           Close
+                      </button>
                     </div>
-                    <div class="col-sm-6 col-md-8">
-                        <h4>
-                            Bhaumik Patel</h4>
-                        <small><cite title="San Francisco, USA">San Francisco, USA <i class="glyphicon glyphicon-map-marker">
-                        </i></cite></small>
-                        <p>
-                            <i class="glyphicon glyphicon-envelope"></i>email@example.com
-                            <br />
-                            <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.jquery2dotnet.com</a>
-                            <br />
-                            <i class="glyphicon glyphicon-gift"></i>June 02, 1988</p>
-                        <!-- Split button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary">
-                                Social</button>
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span><span class="sr-only">Social</span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Twitter</a></li>
-                                <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                                <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Github</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                  </fieldset>
+              </form>
+          </div>
+
         </div>
+      </div>
     </div>
 {% endblock %}

@@ -264,7 +264,7 @@
 }
 
 .sidebar-nav {
-    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(http://127.0.0.1:5000/static/images/sidebar-1.jpg);
+    background-image: linear-gradient( rgb(44, 62, 80), rgba(44, 62, 80, 0.4) ),url(../../static/images/sidebar-1.jpg);
     background-repeat: no-repeat;
     background-size: cover;
 }
