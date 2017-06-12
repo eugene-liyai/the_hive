@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "dashboard.html" %}
 
-</body>
-</html>
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content%}
+<div class="row">
+    <table id="rates_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+        <thead class="thead-inverse">
+            <tr>
+                <th><i class="fa fa-hashtag"></i> Rate ID</th>
+                <th><i class="fa fa-superscript"></i> Rate</th>
+                <th><i class="fa fa-mouse-pointer"></i> Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rates %}
+                {% for rate in rates %}
+                    <tr>
+                        <td>{{rate.rate_id}}</td>
+                        <td>{{rate.rate}}</td>
+                        <td>{{rate.description}}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan=3 class="text-center"><h3>Data rates not found</h3></td>
+                </tr>
+            {% endif %}
+          </tbody>
+    </table>
+</div>
+
+{% endblock %}

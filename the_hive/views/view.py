@@ -426,6 +426,40 @@ def jobs(job_id=None):
 
 
 @login_required
+def job_items(item_id=None):
+    """
+
+    The method returns job(s).
+
+    :param serialize: Serialize helps indicate the format of the response
+    :param item_id: item id intended to be searched
+    :return: Json format or plain text depending in the serialize parameter
+    """
+    jobs = DATA_CONTROLLER.get_item_by_id(item_id=item_id, serialize=True)
+    page = request.args.get("limit")
+    number_of_pages = None
+    pages = []
+    if page:
+        number_of_pages = int(ceil(float(len(jobs)) / PAGE_SIZE))
+        converted_page = int(page)
+
+        if converted_page > number_of_pages or converted_page < 0:
+            return abort(404)
+
+        from_index = (converted_page - 1) * PAGE_SIZE
+        to_index = from_index + PAGE_SIZE
+
+        jobs = jobs[from_index:to_index]
+        if number_of_pages:
+            pages = range(1, number_of_pages + 1)
+
+    return render_template('jobsItems.html',
+                           user=current_user,
+                           pages=pages,
+                           job_items=jobs)
+
+
+@login_required
 def get_user_jobs(job_id=None):
     """
 
@@ -546,7 +580,7 @@ def rate(rate_id):
         if number_of_pages:
             pages = range(1, number_of_pages + 1)
 
-        return render_template('rate.html', pages=pages, jobs=rates)
+    return render_template('rate.html', user=current_user, pages=pages, jobs=rates)
 
 
 def page_not_found(e):

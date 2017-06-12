@@ -353,6 +353,30 @@ class DatabaseController:
         else:
             return all_jobs
 
+    def get_item_by_id(self, item_id=None, serialize=False):
+        """
+        If the item_id parameter is  provided, the application looks up the job with the provided id,
+        else it returns all the jobs
+
+        :param item_id: The id of the item intended to be searched(default value is None)
+        :return: The job with the matching id or all jobs.
+        """
+
+        all_jobs = []
+
+        if item_id is None:
+            all_jobs = self.session.query(JobsDetails).order_by(JobsDetails.job_details_id).all()
+        else:
+            if int(item_id) < 0:
+                return all_jobs
+            else:
+                all_jobs = self.session.query(JobsDetails).filter(JobsDetails.job_details_id == item_id).all()
+
+        if serialize:
+            return [job.serialize() for job in all_jobs]
+        else:
+            return all_jobs
+
     def get_user_job_by_id(self, job_id=None, user=None, serialize=False):
         """
         If the job_id parameter is  provided, the application looks up the job with the provided id,

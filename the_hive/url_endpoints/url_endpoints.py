@@ -9,7 +9,7 @@ Desc      : Routing url endpoints
 # ============================================================================
 
 from the_hive.views.view import login, add_user, get_user_jobs, update_users, update_user_password, delete_user, users
-from the_hive.views.view import page_not_found, server_error, forbiden, index, logout, stats
+from the_hive.views.view import page_not_found, server_error, forbiden, index, logout, stats, job_items
 from the_hive.views.view import delete_job, update_job, add_job, jobs, profile
 from the_hive.views.view import rate, update_rate
 
@@ -34,6 +34,7 @@ def initialize_api_routes(app):
         app.add_url_rule('/update_password/<string:user_id>', 'update_user_password', update_user_password,
                          methods=['POST', 'GET'])
         app.add_url_rule('/admin/jobs', 'jobs', jobs, methods=['GET'])
+        app.add_url_rule('/admin/job_items', 'job_items', job_items, methods=['GET'])
         app.add_url_rule('/user_jobs', 'user_jobs', get_user_jobs, methods=['GET'])
         # app.error_handler_spec[None][404] = page_not_found
         # app.error_handler_spec[None][500] = server_error

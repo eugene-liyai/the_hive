@@ -14,7 +14,7 @@
 <div class="row">
     <div class="col-sm-3 add_job_div">
         <div class="dataTables_length">
-            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job_item"><i class="fa fa-sitemap" aria-hidden="true"></i> Add Job Item</button>
         </div>
     </div>
 </div>
@@ -25,17 +25,19 @@
   <thead class="thead-inverse">
     <tr>
         <th><i class="fa fa-hashtag"></i> Job ID</th>
+        <th><i class="fa fa-sitemap"></i> Job Item ID</th>
         <th><i class="fa fa-calendar"></i> Date Added</th>
         <th><i class="fa fa-list"></i> Description</th>
-        <th><i class="fa fa-clock-o"></i> Duration</th>
+        <th><i class="fa fa-history"></i> Duration</th>
         <th><i class="fa fa-money"></i> Paid</th>
         <th><i class="fa fa-mouse-pointer"></i> Action</th>
     </tr>
   </thead>
       <tbody>
-      {% for job in jobs %}
+      {% for job in job_items %}
         <tr>
-          <td>{{job.job_id}}</td>
+          <td>{{job.job}}</td>
+          <td>{{job.job_details_id}}</td>
           <td>{{job.date_created}}</td>
           <td>{{job.description}}</td>
           <td>{{job.duration}}</td>
@@ -64,13 +66,16 @@
               </div>
               <div class="modal-body">
                   <form class="form-horizontal">
-
                         <div class="form-group">
                             <label class="control-label" for="edit_job_id">Job ID</label>
-                            <input class="form-control input-sm" id="edit_job_id" type="text" value="{{job.job_id}}">
+                            <input class="form-control input-sm" id="edit_job_id" type="text" value="{{job.job}}" disabled>
                         </div>
                         <div class="form-group">
-                            <label class=" control-label" for="edit_duration">Item ID</label>
+                            <label class="control-label" for="edit_job_item_id">Item ID</label>
+                            <input class="form-control input-sm" id="edit_job_item_id" type="text" value="{{job.job_details_id}}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_duration">Duration</label>
                             <input class="form-control input-sm" id="edit_duration" type="text" value="{{job.duration}}">
                         </div>
                         <div class="form-group">
@@ -99,13 +104,21 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="pull-right" data-toggle="buttons">
+                            <label class="btn btn-sm btn-success active">
+                                <input type="radio" name="payment" id="paid" autocomplete="off" checked>
+                                <i class="fa fa-check"></i> paid
+                            </label>
+                            <label class="btn btn-sm btn-danger">
+                                <input type="radio" name="payment" id="unpaid" autocomplete="off">
+                                <i class="fa fa-warning"></i> not paid
+                            </label>
+                        </div>
                         <div class="form-group" style="margin-top: 70px;">
                             <hr>
                             <button type="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
-
-
 
                     </form>
               </div>
@@ -142,60 +155,36 @@
       </tbody>
 </table>
 
-<!-- Modal add job-->
-  <div class="modal fade" id="add_job" role="dialog">
+    <!-- Modal add job item-->
+  <div class="modal fade" id="add_job_item" role="dialog">
     <div class="modal-dialog">
 
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</h4>
+          <h4 class="modal-title"><i class="fa fa-sitemap" aria-hidden="true"></i> Add Job Item</h4>
         </div>
           <form class="form-horizontal" action="/admin/add_job" method="post">
               <fieldset>
                 <div class="modal-body">
                     <div class="form-group">
-                      <label class="col-lg-2 control-label" for="job_id">Job ID</label>
-                        <div class="col-lg-10">
-                            <input class="form-control input-sm" type="text" name="job_id" id="job_id">
+                      <label class="col-lg-3 control-label" for="job_item_name">Job Item Name</label>
+                        <div class="col-lg-9">
+                            <input class="form-control input-sm" type="text" name="job_item_name" id="job_item_name">
                         </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-lg-2 control-label" for="job_name">Job Name</label>
-                        <div class="col-lg-10">
-                            <input class="form-control input-sm" type="text" name="job_name" id="job_name">
+                      <label class="col-lg-3 control-label" for="item_duration">Duration</label>
+                        <div class="col-lg-9">
+                            <input class="form-control input-sm" type="text" name="item_duration" id="item_duration">
                         </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-lg-2 control-label" for="duration">Duration</label>
-                        <div class="col-lg-10">
-                            <input class="form-control input-sm" type="text" name="duration" id="duration">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="description" class="col-lg-2 control-label">Description</label>
-                      <div class="col-lg-10">
-                        <textarea class="form-control" rows="3" name="description" id="description"></textarea>
+                      <label for="item_description" class="col-lg-3 control-label">Description</label>
+                      <div class="col-lg-9">
+                        <textarea class="form-control" rows="3" name="item_description" id="item_description"></textarea>
                       </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label" >Verbatim</label>
-                        <div class="col-lg-10">
-                             <label for="verbatim" class="btn btn-primary btn-sm">
-                                Verbatim <input type="checkbox" id="verbatim" class="badgebox">
-                                <span class="badge"><i class="fa fa-check"></i></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-lg-2 control-label">Timestamp</label>
-                        <div class="col-lg-10">
-                            <label for="timestamp" class="btn btn-primary btn-sm">
-                                Timestamp <input type="checkbox" id="timestamp" class="badgebox">
-                                <span class="badge"><i class="fa fa-check"></i></span>
-                            </label>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
