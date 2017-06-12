@@ -549,7 +549,7 @@ def update_rate(rate_id):
 
 
 @login_required
-def rate(rate_id):
+def rate(rate_id=None):
     """
 
     The method returns job rate(s).
@@ -580,7 +580,7 @@ def rate(rate_id):
         if number_of_pages:
             pages = range(1, number_of_pages + 1)
 
-    return render_template('rate.html', user=current_user, pages=pages, jobs=rates)
+    return render_template('rates.html', user=current_user, pages=pages, rates=rates)
 
 
 def page_not_found(e):
