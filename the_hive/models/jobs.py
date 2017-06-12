@@ -25,6 +25,7 @@ class Jobs(Model):
     competed = Column(Boolean, default=False, nullable=False)
     verbatim = Column(Boolean, default=False, nullable=False)
     timestamp = Column(Boolean, default=False, nullable=False)
+    paid = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
     description = Column(Text)
     job_detail = relationship("JobsDetails", backref="Jobs")
@@ -43,6 +44,7 @@ class Jobs(Model):
             "duration": self.duration,
             "description": self.description,
             "date_created": self.date_created.isoformat() if self.date_created else "",
+            "paid": self.paid,
             "date_completed": self.date_completed.isoformat() if self.date_completed else "",
             "job_details": [job.serialize() for job in self.job_detail]
         }

@@ -1,0 +1,185 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row  panel-style">
+        <div class="col-md-3">
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <i class="fa fa-usd fa-3x"></i>
+                  </div>
+                  <div class="col-xs-9 text-right">
+                    <p class="announcement-heading"> Total Rev </p>
+                    <p class="announcement-text">KES {{total_revenue}}</p>
+                  </div>
+                </div>
+              </div>
+              <a href="#">
+                <div class="panel-footer announcement-bottom">
+                  <div class="row">
+                    <div class="col-xs-8">
+                      View Table
+                    </div>
+                    <div class="col-xs-4 text-right">
+                      <i class="fa fa-arrow-circle-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <i class="fa fa-list-ol fa-3x"></i>
+                  </div>
+                  <div class="col-xs-9 text-right">
+                    <p class="announcement-heading">Jobs</p>
+                    <p class="announcement-text">{{total_jobs}}</p>
+                  </div>
+                </div>
+              </div>
+              <a href="#">
+                <div class="panel-footer announcement-bottom">
+                  <div class="row">
+                    <div class="col-xs-8">
+                      View Table
+                    </div>
+                    <div class="col-xs-4 text-right">
+                      <i class="fa fa-arrow-circle-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <i class="fa fa-money fa-3x"></i>
+                  </div>
+                  <div class="col-xs-9 text-right">
+                    <p class="announcement-heading"> Total Paid</p>
+                    <p class="announcement-text">KES {{total_paid}}</p>
+                  </div>
+                </div>
+              </div>
+              <a href="#">
+                <div class="panel-footer announcement-bottom">
+                  <div class="row">
+                    <div class="col-xs-8">
+                      View Table
+                    </div>
+                    <div class="col-xs-4 text-right">
+                      <i class="fa fa-arrow-circle-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <i class="fa fa-line-chart fa-3x"></i>
+                  </div>
+                  <div class="col-xs-9 text-right">
+                    <p class="announcement-heading">J.P.M</p>
+                    <p class="announcement-text">{{job_within_a_month}}</p>
+                  </div>
+                </div>
+              </div>
+              <a href="#">
+                <div class="panel-footer announcement-bottom">
+                  <div class="row">
+                    <div class="col-xs-8">
+                      View Table
+                    </div>
+                    <div class="col-xs-4 text-right">
+                      <i class="fa fa-arrow-circle-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" id="stats-table-wrapper">
+            <table id="stats_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th><i class="fa fa-hashtag"></i> Job ID</th>
+                        <th><i class="fa fa-indent"></i> Job item ID</th>
+                        <th><i class="fa fa-calendar-check-o"></i> Date Completed</th>
+                        <th><i class="fa fa-money"></i> Paid</th>
+                        <th><i class="fa fa-clock-o"></i> Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in user.user_detail %}
+                    <tr data-toggle="modal" data-target="#stat_{{job.job_details_id}}">
+                        <td>{{job.job}}</td>
+                        <td>{{job.job_details_id}}</td>
+                        <td>
+                            {% if job.date_completed %}
+                            <p class="label label-info">Job Completed</p>
+                            {% else %}
+                            <p class="label label-warning">Job in progress</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if job.paid == False %}
+                                <i class="fa fa-times-circle-o text-warning"></i>
+                            {% else %}
+                                <i class="fa fa-check-circle-o text-success"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{job.duration}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/tables.js') }}"></script>
+{% endblock %}

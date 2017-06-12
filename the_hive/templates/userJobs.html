@@ -10,21 +10,15 @@
 {% endblock %}
 
 {% block dashboard_content%}
-{% if user.role == 'ROLE_ADMIN' %}{% endif %}
-<!--<div class="col-sm-6 add_job_div">-->
-    <!--<div class="dataTables_length">-->
-        <!--<button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i>  Add</button>-->
-    <!--</div>-->
-<!--</div>-->
 
 <table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
   <thead class="thead-inverse">
     <tr>
-        <th>Job ID</th>
-        <th>Date Added</th>
-        <th>Description</th>
-        <th>Duration</th>
-        <th>Paid</th>
+        <th><i class="fa fa-hashtag"></i> Job ID</th>
+        <th><i class="fa fa-calendar"></i> Date Added</th>
+        <th><i class="fa fa-list"></i> Description</th>
+        <th><i class="fa fa-clock-o"></i> Duration</th>
+        <th><i class="fa fa-money"></i> Paid</th>
     </tr>
   </thead>
       <tbody>
@@ -57,14 +51,21 @@
                   <div class="job-container">
                       <h4><i class="fa fa-file-o"></i> Job ID: {{job.job}}</h4>
                       <h6><i class="fa fa-info"></i> Item No: {{job.job_details_id}}</h6>
-                      <p class="description">This is a dummy text to describe how the file is expected to display the description</p>
-                      <p><i class="fa fa-clock-o"></i> Duration <span>15 min</span></p>
+                      <p class="description">{{job.description}}</p>
+                      <p><i class="fa fa-clock-o"></i> Duration <span>{{job.duration}}</span></p>
                       <p><i class="fa fa-quote-left"></i> Verbatim <span class="label label-success">True</span></p>
                       <p><i class="fa fa-history"></i> Timestamp <span class="label label-warning">False</span></p>
                       <p><i class="fa fa-calendar"></i> Date uploaded <span>4 hrs ago</span></p>
-                      <p><i class="fa fa-money"></i> Paid <span><i class="fa fa-times-circle-o text-warning"></i></span></p>
+                      <p><i class="fa fa-money"></i> Paid <span>
+                          {% if job.paid == False %}
+                            <i class="fa fa-times-circle-o text-warning"></i>
+                          {% else %}
+                            <i class="fa fa-check-circle-o text-success"></i>
+                          {% endif %}
+                      </span>
+                      </p>
                       <p><i class="fa fa-calendar-check-o"></i> Completed <span>1 min ago</span></p>
-                      <p><i class="fa fa-user"></i> Assigned to <span>John Doe</span></p>
+                      <p><i class="fa fa-user"></i> Assigned to <span>{{user.first_name}} {{user.last_name}}</span></p>
                   </div>
               </div>
               <div class="modal-footer">

@@ -10,15 +10,6 @@
 {% endblock %}
 
 {% block dashboard_content%}
-{% if user.role == 'ROLE_ADMIN' %}
-<div class="row">
-    <div class="col-sm-6 add_job_div">
-        <div class="dataTables_length">
-            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i>  Add</button>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 <div class="row">
 <table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">

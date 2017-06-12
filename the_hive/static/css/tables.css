@@ -1,5 +1,9 @@
-#user_jobs_table_wrapper {
+#user_jobs_table_wrapper{
     margin-top: 40px;
+}
+
+#stats-table-wrapper {
+    margin-top: 20px;
 }
 
 .pagination {
@@ -60,4 +64,12 @@
 
 .btn.active {
 	display: none;
+}
+
+#stats_table_filter {
+    float: right;
+}
+
+#stats_table_filter input[type="search"] {
+    margin-left: 10px;
 }

@@ -285,6 +285,8 @@ class DatabaseController:
 
         if rate_id:
             all_rates = self.session.query(Rate).filter(Rate.rate_id == rate_id).all()
+        elif rate_id is None:
+            all_rates = self.session.query(Rate).order_by(Rate.rate_id).all()
 
         if serialize:
             return [rate.serialize() for rate in all_rates]

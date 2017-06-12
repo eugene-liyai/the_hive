@@ -11,7 +11,7 @@ Desc      : Controller file processes request from the url endpoints
 import os
 from math import ceil
 
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from flask import render_template, url_for, request, redirect, flash, abort
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -165,7 +165,7 @@ def delete_user(user_id):
 
 
 @login_required
-def users(user_id):
+def users(user_id=None):
     """
 
     The method returns user(s).
@@ -195,7 +195,7 @@ def users(user_id):
         if number_of_pages:
             pages = range(1, number_of_pages + 1)
 
-        return render_template('users.html', pages=pages, users=users)
+    return render_template('users.html', user=current_user, pages=pages, users=users)
 
 
 @login_required
@@ -214,6 +214,39 @@ def profile():
             return render_template('profile.html', user=user[0])
         else:
             return abort(500)
+
+
+@login_required
+def stats():
+    """
+    
+    The method returns user's job stats.
+    
+    :return: 
+    """
+    if current_user.user_id:
+        job_rate = DATA_CONTROLLER.get_rate_by_id()[0].rate
+        total_jobs = 0
+        total_revenue = 0
+        total_paid = 0
+        job_within_a_month = 0
+        past_30_days = date.today() + timedelta(-30)
+
+        for job in current_user.user_detail:
+            total_jobs += 1
+            total_revenue = total_revenue + (job.duration * job_rate)
+            if job.paid:
+                total_paid = total_paid + (job.duration * job_rate)
+
+            if job.date_completed and job.date_completed > past_30_days:
+                datetime.combine(job.date_completed, datetime.min.time())
+                job_within_a_month += 1
+
+        return render_template('stats.html', user=current_user,
+                               total_jobs=total_jobs,
+                               total_revenue=total_revenue,
+                               total_paid=total_paid,
+                               job_within_a_month=job_within_a_month)
 
 
 @login_required
@@ -386,7 +419,10 @@ def jobs(job_id=None):
         if number_of_pages:
             pages = range(1, number_of_pages + 1)
 
-        return render_template('jobs.html', pages=pages, jobs=jobs)
+    return render_template('jobs.html',
+                           user=current_user,
+                           pages=pages,
+                           jobs=jobs)
 
 
 @login_required

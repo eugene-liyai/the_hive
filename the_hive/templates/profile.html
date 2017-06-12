@@ -4,8 +4,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
 {% endblock %}
@@ -46,7 +44,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="#" data-toggle="modal" data-target="#edit_password_info">Change Password</a></li>
                                 <li><a href="#" data-toggle="modal" data-target="#edit_user_info" >Edit account</a></li>
-                                <li><a href="#" >Account Stats</a></li>
+                                <li><a href="{{url_for('stats')}}">Account Stats</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">Set Availability</a></li>
                             </ul>
