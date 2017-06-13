@@ -11,7 +11,7 @@ Desc      : Routing url endpoints
 from the_hive.views.view import login, add_user, get_user_jobs, update_users, update_user_password, delete_user, users
 from the_hive.views.view import page_not_found, server_error, forbiden, index, logout, stats, job_items
 from the_hive.views.view import delete_job, update_job, add_job, jobs, profile, availability
-from the_hive.views.view import rate, update_rate
+from the_hive.views.view import rate, update_rate, help_page
 
 
 def initialize_api_routes(app):
@@ -19,6 +19,7 @@ def initialize_api_routes(app):
         app.add_url_rule('/', 'index', index, methods=['POST', 'GET'])
         app.add_url_rule('/index', 'index', index, methods=['POST', 'GET'])
         app.add_url_rule('/login', 'login', login, methods=['POST', 'GET'])
+        app.add_url_rule('/help', 'help_page', help_page, methods=['GET'])
         app.add_url_rule('/logout', 'logout', logout, methods=['GET'])
         app.add_url_rule('/admin/add_user', 'add_user', add_user, methods=['POST', 'GET'])
         app.add_url_rule('/admin/users', 'users', users, methods=['GET'])

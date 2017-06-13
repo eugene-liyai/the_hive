@@ -392,6 +392,17 @@ def update_job(job_id):
 
 
 @login_required
+def help_page():
+    """
+
+    The method returns help messages.
+
+    :return: job rate(s)
+    """
+
+    return render_template('help.html', user=current_user)
+
+@login_required
 def jobs(job_id=None):
     """
 

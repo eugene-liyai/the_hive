@@ -32,7 +32,7 @@
             </div>
             <!-- Sidebar brand name -->
             <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
-                <i class="fa fa-envelope"></i> <!--{{user.email}}--> jon.doe@mail.com
+                <i class="fa fa-envelope"></i> {{user.email}}
                 <b class="caret"></b>
             </a>
         </div>
@@ -52,7 +52,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" tabindex="-1">
+                        <a href="{{ url_for('help_page') }}" tabindex="-1">
                            <i class="fa fa-question"></i> Help
                         </a>
                     </li>
