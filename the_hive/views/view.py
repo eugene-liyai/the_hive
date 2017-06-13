@@ -115,7 +115,7 @@ def logout():
     :return: redirects to login page
     """
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @login_required
@@ -401,6 +401,10 @@ def jobs(job_id=None):
     :param job_id: job id intended to be searched
     :return: Json format or plain text depending in the serialize parameter
     """
+
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
     jobs = DATA_CONTROLLER.get_job_by_id(job_id=job_id, serialize=True)
     page = request.args.get("limit")
     number_of_pages = None
@@ -435,6 +439,10 @@ def job_items(item_id=None):
     :param item_id: item id intended to be searched
     :return: Json format or plain text depending in the serialize parameter
     """
+
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
     jobs = DATA_CONTROLLER.get_item_by_id(item_id=item_id, serialize=True)
     page = request.args.get("limit")
     number_of_pages = None
@@ -581,6 +589,11 @@ def rate(rate_id=None):
             pages = range(1, number_of_pages + 1)
 
     return render_template('rates.html', user=current_user, pages=pages, rates=rates)
+
+
+@login_required
+def availability():
+    return render_template('availability.html', user=current_user)
 
 
 def page_not_found(e):

@@ -32,7 +32,7 @@
             </div>
             <!-- Sidebar brand name -->
             <a data-toggle="dropdown" class="sidebar-brand" href="#settings-dropdown">
-                <i class="fa fa-envelope"></i> {{user.email}}
+                <i class="fa fa-envelope"></i> <!--{{user.email}}--> jon.doe@mail.com
                 <b class="caret"></b>
             </a>
         </div>
@@ -47,7 +47,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" tabindex="-1">
+                        <a href="{{ url_for('availability') }}" tabindex="-1">
                             <i class="fa fa-hourglass-start"></i> Set Availability
                         </a>
                     </li>
@@ -56,13 +56,9 @@
                            <i class="fa fa-question"></i> Help
                         </a>
                     </li>
-                    <li>
-                        <a href="#" tabindex="-1">
-                           <i class="fa fa-sign-out"></i> Logout
-                        </a>
-                    </li>
                 </ul>
             </li>
+            {% if user.role == 'ROLE_ADMIN'%}
             <li>
                 <a href="{{ url_for('job_items') }}">
                     <i class="sidebar-icon md-inbox"></i>
@@ -87,8 +83,13 @@
                     Rates
                 </a>
             </li>
+            {% endif %}
             <li class="divider"></li>
-
+            <li>
+                <a href="{{ url_for('logout') }}" tabindex="-1">
+                   <i class="fa fa-sign-out"></i> Logout
+                </a>
+            </li>
         </ul>
     </aside>
 
