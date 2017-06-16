@@ -35,16 +35,54 @@
       <tbody>
       {% for user in users %}
         <tr>
-          <td>{{user.user_id}}</td>
-          <td>{{user.date_added}}</td>
-          <td>{{user.first_name}}</td>
-          <td>{{user.last_name}}</td>
-          <td>{{user.email}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.user_id}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.date_added}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.first_name}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.last_name}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.email}}</td>
           <td>
               <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{user.user_id}}"><i class="fa fa-edit"></i></a>
               <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete_{{user.user_id}}"><i class="fa fa-trash-o"></i></a>
           </td>
         </tr>
+
+      <!-- Modal view user -->
+      <div class="modal fade" id=user_{{user.user_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-user"></i> User {{user.first_name}} {{user.last_name}}</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="job-container">
+                      <h4><i class="fa fa-user"></i> {{user.first_name}} {{user.last_name}} </h4>
+                      <h6><i class="fa fa-info"></i> user jobs: {{user.job_details|length}} </h6>
+                      <p class="description">{{user.email}}</p>
+                      <p><i class="fa fa-history"></i> Role <span class="label label-primary">
+                          {% if user.role == 'ROLE_AGENT' %}
+                            Agent
+                          {% else %}
+                            Admin
+                          {% endif %}
+                      </span></p>
+                      <p><i class="fa fa-calendar"></i> Date Joined <span>{{user.date_added}}</span></p>
+                      <p><i class="fa fa-user-times"></i> Block user
+                          <span>
+                              <input id="block_user_btn" type="checkbox" value="">
+                          </span>
+                      </p>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+      </div>
 
       <!-- Modal edit User -->
       <div class="modal fade" id=edit_{{user.user_id}} role="dialog">

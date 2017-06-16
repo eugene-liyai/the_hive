@@ -36,7 +36,7 @@ def initialize_api_routes(app):
         app.add_url_rule('/update_password/<string:user_id>', 'update_user_password', update_user_password,
                          methods=['POST', 'GET'])
         app.add_url_rule('/admin/jobs', 'jobs', jobs, methods=['GET'])
-        app.add_url_rule('/admin/job_items', 'job_items', job_items, methods=['GET'])
+        app.add_url_rule('/admin/job_items', 'job_items', job_items, methods=['GET', 'POST'])
         app.add_url_rule('/user_jobs', 'user_jobs', get_user_jobs, methods=['GET'])
         # app.error_handler_spec[None][404] = page_not_found
         # app.error_handler_spec[None][500] = server_error
