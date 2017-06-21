@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 """
 File      : controller.py
 Date      : April, 2017
@@ -17,7 +18,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 
 from the_hive import login_manager
 from the_hive.controllers.database_controller import DatabaseController
-from the_hive.models.users import Users
+from the_hive.util import *
 
 #
 # Database engine
@@ -86,7 +87,6 @@ def login():
             if validation_return['status']:
                 user = validation_return['User']
                 login_user(user, True)
-                flash("Logged in successfully as {}".format(user.email))
                 return redirect(request.args.get('next') or url_for('index'))
             flash('Incorrect email or password')
         return render_template("index.html")
@@ -114,6 +114,7 @@ def logout():
 
     :return: redirects to login page
     """
+    flash('Logout successful')
     logout_user()
     return redirect(url_for('index'))
 
@@ -332,32 +333,89 @@ def add_job():
         return abort(403)
 
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
+
         job_name = request.form['job_name']
         job_id = request.form['job_id']
-        verbatim = request.form['verbatim']
-        timestamp = request.form['timestamp']
+        verbatim = request.form.get('verbatim')
+        timestamp = request.form.get('timestamp')
         duration = request.form['duration']
         description = request.form['description']
-        user = request.form['user']
+
+        if is_numbers_only(duration) is False:
+            flash("Duration can only be an integer")
+            return redirect(url_for('jobs'))
+        elif has_white_space(job_id):
+            flash("Job ID cannot contain white space")
+            return redirect(url_for('jobs'))
+
         try:
             job_id_response = DATA_CONTROLLER.create_job(job_id,
                                                job_name,
                                                verbatim,
                                                timestamp,
                                                duration,
-                                               description,
-                                               user)
+                                               description)
             flash("Added job '{}'".format(job_id_response))
-            return render_template('add_job.html')
+            return redirect(url_for('jobs'))
         except Exception as ex:
             print(ex)
             flash("Error adding job '{}'".format(job_id))
-            return render_template('add_job.html')
-    return render_template('add_job.html')
+            return redirect(url_for('jobs'))
+    return redirect(url_for('jobs'))
 
 
 @login_required
 def update_job(job_id):
+    """
+
+    The method updates existing job to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
+
+        print(request.form["edit_job_id"],
+              request.form["progress"],
+              request.form["progress"],
+              request.form["edit_verbatim"],
+              request.form["edit_timestamp"],
+              request.form["edit_duration"],
+              request.form["edit_description"]
+              )
+
+        date_completed = None
+        if request.form["progress"] is True:
+            date_completed = datetime.now()
+
+        if is_numbers_only(request.form["edit_duration"]) is False:
+            flash("Duration can only be an integer")
+            return redirect(url_for('jobs'))
+        elif has_white_space(request.form["edit_job_id"]):
+            flash("Job ID cannot contain white space")
+            return redirect(url_for('jobs'))
+
+        new_job = {
+            "job_id": request.form["edit_job_id"],
+            "date_completed": date_completed,
+            "competed": request.form["progress"],
+            "verbatim": request.form["edit_verbatim"],
+            "timestamp": request.form["edit_timestamp"],
+            "duration": request.form["edit_duration"],
+            "description": request.form["edit_description"]
+        }
+
+        try:
+            DATA_CONTROLLER.update_job(job_id, new_job)
+            flash("updated job '{}'".format(job_id))
+            return redirect(url_for('jobs'))
+        except Exception as ex:
+            print(ex)
+            flash("Error updating job '{}'".format(job_id))
+            return redirect(url_for('jobs'))
+
+
+@login_required
+def update_job_item(job_item_id):
     """
 
     The method updates existing job to the application.
@@ -401,6 +459,7 @@ def help_page():
     """
 
     return render_template('help.html', user=current_user)
+
 
 @login_required
 def jobs(job_id=None):
@@ -520,12 +579,9 @@ def delete_job(job_id):
     """
     if current_user.role == 'ROLE_ADMIN':
         try:
-            if DATA_CONTROLLER.delete_job(job_id):
-                flash("deleted job '{}'".format(job_id))
-                return redirect(url_for('jobs'))
-            else:
-                flash("failed to delete job '{}'".format(job_id))
-                return redirect(url_for('jobs'))
+            DATA_CONTROLLER.delete_job(job_id)
+            flash("deleted job '{}'".format(job_id))
+            return redirect(url_for('jobs'))
         except ValueError as err:
             print(err)
             flash("Error communicating with the server")

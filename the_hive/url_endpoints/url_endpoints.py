@@ -24,7 +24,7 @@ def initialize_api_routes(app):
         app.add_url_rule('/admin/add_user', 'add_user', add_user, methods=['POST', 'GET'])
         app.add_url_rule('/admin/users', 'users', users, methods=['GET'])
         app.add_url_rule('/admin/add_job', 'add_job', add_job, methods=['POST', 'GET'])
-        app.add_url_rule('/admin/update_job/<string:job_id>', 'update_job', update_job, methods=['POST', 'GET'])
+        app.add_url_rule('/admin/update_job/<string:job_id>', 'update_job', update_job, methods=['POST'])
         app.add_url_rule('/admin/delete_job/<string:job_id>', 'delete_job', delete_job, methods=['GET'])
         app.add_url_rule('/admin/delete_user/<string:user_id>', 'delete_user', delete_user, methods=['GET'])
         app.add_url_rule('/admin/rates', 'rate', rate, methods=['GET'])

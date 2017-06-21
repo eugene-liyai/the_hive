@@ -198,8 +198,7 @@ class DatabaseController:
                    verbatim=None,
                    timestamp=None,
                    duration=None,
-                   description=None,
-                   user=None):
+                   description=None):
         """
 
         The method creates and saves a new job to the database.
@@ -219,8 +218,7 @@ class DatabaseController:
                            verbatim=verbatim,
                            timestamp=timestamp,
                            duration=duration,
-                           description=description,
-                           user=user)
+                           description=description)
         self.session.add(created_job)
         self.session.commit()
 
@@ -303,9 +301,6 @@ class DatabaseController:
         :return: The job with the matching id.
         """
 
-        if int(job_id) < 0:
-            raise ValueError('Parameter [job_id] should be positive!')
-
         updated_job = None
         jobs = self.get_job_by_id(job_id)
         job = None
@@ -315,14 +310,12 @@ class DatabaseController:
             job = jobs[0]
 
         if job:
-            job.job_name = new_job["job_name"]
             job.date_completed = new_job["date_completed"]
             job.competed = new_job["competed"]
             job.verbatim = new_job["verbatim"]
             job.timestamp = new_job["timestamp"]
             job.duration = new_job["duration"]
             job.description = new_job["description"]
-            job.user = new_job["user"]
             self.session.add(job)
             self.session.commit()
             updated_job = self.get_job_by_id(job_id)[0]
@@ -343,10 +336,7 @@ class DatabaseController:
         if job_id is None:
             all_jobs = self.session.query(Jobs).order_by(Jobs.job_id).all()
         else:
-            if int(job_id) < 0:
-                return all_jobs
-            else:
-                all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
+            all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
 
         if serialize:
             return [job.serialize() for job in all_jobs]
@@ -411,9 +401,6 @@ class DatabaseController:
         :param job_id: The id of the job intended to be deleted
         :return: True if job object was deleted, else False.
         """
-
-        if int(job_id) < 0:
-            raise ValueError('Parameter [job_id] should be positive!')
 
         if job_id:
             try:
