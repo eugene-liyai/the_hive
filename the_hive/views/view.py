@@ -350,11 +350,11 @@ def add_job():
 
         try:
             job_id_response = DATA_CONTROLLER.create_job(job_id,
-                                               job_name,
-                                               verbatim,
-                                               timestamp,
-                                               duration,
-                                               description)
+                                                         job_name,
+                                                         verbatim,
+                                                         timestamp,
+                                                         duration,
+                                                         description)
             flash("Added job '{}'".format(job_id_response))
             return redirect(url_for('jobs'))
         except Exception as ex:
@@ -362,6 +362,47 @@ def add_job():
             flash("Error adding job '{}'".format(job_id))
             return redirect(url_for('jobs'))
     return redirect(url_for('jobs'))
+
+
+@login_required
+def add_job_item():
+    """
+
+    The method adds new job to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if current_user.role != 'ROLE_ADMIN':
+        return abort(403)
+
+    if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
+
+        job_name = request.form['job_item_name']
+        user_assign = request.form['user_assign']
+        duration = request.form.get('item_duration')
+        description = request.form.get('item_description')
+
+        if is_numbers_only(duration) is False:
+            flash("Duration can only be an integer")
+            return redirect(url_for('job_items'))
+
+        parent_job_detail = DATA_CONTROLLER.get_job_by_id(job_id=job_name)
+        if is_job_duration_invalid(parent_job_detail[0], int(duration)):
+            flash("The job duration is invalid, does not match parent")
+            return redirect(url_for('job_items'))
+
+        try:
+            job_id_response = DATA_CONTROLLER.create_job_item(job_name,
+                                                              user_assign,
+                                                              duration,
+                                                              description)
+            flash("Added job item '{}'".format(job_id_response))
+            return redirect(url_for('job_items'))
+        except Exception as ex:
+            print(ex)
+            flash("Error adding job item under '{}'".format(job_name))
+            return redirect(url_for('job_items'))
+    return redirect(url_for('job_items'))
 
 
 @login_required
@@ -374,19 +415,6 @@ def update_job(job_id):
     """
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
 
-        print(request.form["edit_job_id"],
-              request.form["progress"],
-              request.form["progress"],
-              request.form["edit_verbatim"],
-              request.form["edit_timestamp"],
-              request.form["edit_duration"],
-              request.form["edit_description"]
-              )
-
-        date_completed = None
-        if request.form["progress"] is True:
-            date_completed = datetime.now()
-
         if is_numbers_only(request.form["edit_duration"]) is False:
             flash("Duration can only be an integer")
             return redirect(url_for('jobs'))
@@ -394,12 +422,17 @@ def update_job(job_id):
             flash("Job ID cannot contain white space")
             return redirect(url_for('jobs'))
 
+        timestamp = False
+        verbatim = False
+        if request.form.get("edit_timestamp"):
+            timestamp = True
+        if request.form.get("edit_verbatim"):
+            verbatim = True
+
         new_job = {
             "job_id": request.form["edit_job_id"],
-            "date_completed": date_completed,
-            "competed": request.form["progress"],
-            "verbatim": request.form["edit_verbatim"],
-            "timestamp": request.form["edit_timestamp"],
+            "verbatim": verbatim,
+            "timestamp": timestamp,
             "duration": request.form["edit_duration"],
             "description": request.form["edit_description"]
         }
@@ -418,35 +451,53 @@ def update_job(job_id):
 def update_job_item(job_item_id):
     """
 
-    The method updates existing job to the application.
+    The method updates existing job item to the application.
 
     :return: returns success message if method executes successfully
     """
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
 
         date_completed = None
-        if request.form["competed"] is True:
+        complete = False
+        paid = False
+        if request.form["progress"] == 'complete':
             date_completed = datetime.now()
+            complete = True
+
+        if request.form["pay-status"] == 'paid':
+            paid = True
+
+        if is_numbers_only(request.form["edit_item_duration"]) is False:
+            flash("Duration can only be an integer")
+            return redirect(url_for('job_items'))
+
+        parent_job_detail = DATA_CONTROLLER.get_job_by_id(job_id=request.form["job_name"])
+        if is_job_duration_invalid(parent_job_detail[0],
+                                   int(request.form["edit_item_duration"]),
+                                   int(request.form["job_item_id"])):
+            flash("The job duration is invalid, does not match parent")
+            return redirect(url_for('job_items'))
+
+        if paid and complete is False:
+            flash("Cannot mark job as paid while job still in progress")
+            return redirect(url_for('job_items'))
 
         new_job = {
-            "job_name": request.form["job_name"],
             "date_completed": date_completed,
-            "competed": request.form["competed"],
-            "verbatim": request.form["verbatim"],
-            "timestamp": request.form["timestamp"],
-            "duration": request.form["duration"],
-            "description": request.form["description"],
-            "user": request.form["user"]
+            "competed": complete,
+            "duration": request.form["edit_item_duration"],
+            "description": request.form["edit_item_description"],
+            "user": request.form["user"],
+            "paid": paid
         }
-
         try:
-            DATA_CONTROLLER.update_job(job_id, new_job)
-            flash("updated job '{}'".format(job_id))
-            return redirect(url_for('jobs'))
+            DATA_CONTROLLER.update_job_item(job_item_id, new_job)
+            flash("updated job item '{}'".format(job_item_id))
+            return redirect(url_for('job_items'))
         except Exception as ex:
             print(ex)
-            flash("Error updating job '{}'".format(job_id))
-            return redirect(url_for('jobs'))
+            flash("Error updating job item '{}'".format(job_item_id))
+            return redirect(url_for('job_items'))
 
 
 @login_required
@@ -514,6 +565,8 @@ def job_items(item_id=None):
         return abort(403)
 
     jobs = DATA_CONTROLLER.get_item_by_id(item_id=item_id, serialize=True)
+    all_inprogress_jobs = DATA_CONTROLLER.get_job_not_completed(serialize=True)
+    agents = DATA_CONTROLLER.get_available_users(serialize=True)
     page = request.args.get("limit")
     number_of_pages = None
     pages = []
@@ -534,7 +587,9 @@ def job_items(item_id=None):
     return render_template('jobsItems.html',
                            user=current_user,
                            pages=pages,
-                           job_items=jobs)
+                           job_items=jobs,
+                           inprogress=all_inprogress_jobs,
+                           agents=agents)
 
 
 @login_required
@@ -579,13 +634,43 @@ def delete_job(job_id):
     """
     if current_user.role == 'ROLE_ADMIN':
         try:
-            DATA_CONTROLLER.delete_job(job_id)
-            flash("deleted job '{}'".format(job_id))
-            return redirect(url_for('jobs'))
+            delete_response = DATA_CONTROLLER.delete_job(job_id)
+            if delete_response:
+                flash("deleted job '{}'".format(job_id))
+                return redirect(url_for('jobs'))
+            else:
+                flash("Error deleting job '{}'".format(job_id))
+                return redirect(url_for('jobs'))
         except ValueError as err:
             print(err)
             flash("Error communicating with the server")
             return redirect(url_for('jobs'))
+    else:
+        return render_template('403.html'), 403
+
+
+@login_required
+def delete_job_item(job_item_id):
+    """
+
+    The method deletes job with the provided id.
+
+    :param job_item_id: id of the job item to be deleted
+    :return: http response
+    """
+    if current_user.role == 'ROLE_ADMIN':
+        try:
+            delete_response = DATA_CONTROLLER.delete_job_item(job_item_id)
+            if delete_response:
+                flash("deleted job item '{}'".format(job_item_id))
+                return redirect(url_for('job_items'))
+            else:
+                flash("Error deleting item '{}'".format(job_item_id))
+                return redirect(url_for('job_items'))
+        except ValueError as err:
+            print(err)
+            flash("Error communicating with the server")
+            return redirect(url_for('job_items'))
     else:
         return render_template('403.html'), 403
 

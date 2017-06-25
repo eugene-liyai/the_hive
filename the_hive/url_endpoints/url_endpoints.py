@@ -9,8 +9,8 @@ Desc      : Routing url endpoints
 # ============================================================================
 
 from the_hive.views.view import login, add_user, get_user_jobs, update_users, update_user_password, delete_user, users
-from the_hive.views.view import page_not_found, server_error, forbiden, index, logout, stats, job_items
-from the_hive.views.view import delete_job, update_job, add_job, jobs, profile, availability
+from the_hive.views.view import page_not_found, server_error, delete_job_item, index, logout, stats, job_items, update_job_item
+from the_hive.views.view import delete_job, update_job, add_job, jobs, profile, availability, add_job_item
 from the_hive.views.view import rate, update_rate, help_page
 
 
@@ -24,8 +24,13 @@ def initialize_api_routes(app):
         app.add_url_rule('/admin/add_user', 'add_user', add_user, methods=['POST', 'GET'])
         app.add_url_rule('/admin/users', 'users', users, methods=['GET'])
         app.add_url_rule('/admin/add_job', 'add_job', add_job, methods=['POST', 'GET'])
-        app.add_url_rule('/admin/update_job/<string:job_id>', 'update_job', update_job, methods=['POST'])
+        app.add_url_rule('/admin/add_job_item', 'add_job_item', add_job_item, methods=['POST', 'GET'])
+        app.add_url_rule('/admin/update_job/<string:job_id>', 'update_job', update_job, methods=['POST', 'GET'])
+        app.add_url_rule('/admin/update_job_item/<string:job_item_id>', 'update_job_item',
+                         update_job_item, methods=['POST'])
         app.add_url_rule('/admin/delete_job/<string:job_id>', 'delete_job', delete_job, methods=['GET'])
+        app.add_url_rule('/admin/delete_job_item/<string:job_item_id>',
+                         'delete_job_item', delete_job_item, methods=['GET'])
         app.add_url_rule('/admin/delete_user/<string:user_id>', 'delete_user', delete_user, methods=['GET'])
         app.add_url_rule('/admin/rates', 'rate', rate, methods=['GET'])
         app.add_url_rule('/profile', 'profile', profile, methods=['GET'])

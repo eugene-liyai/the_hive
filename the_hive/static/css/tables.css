@@ -62,14 +62,25 @@
 }
 #user_jobs_table td{border-top:0px !important; border-right:1px solid #fff !important;}
 
-.btn.active {
-	display: none;
-}
-
 #stats_table_filter {
     float: right;
 }
 
 #stats_table_filter input[type="search"] {
     margin-left: 10px;
+}
+
+#progress_toggle .notActive{
+    color: #2c3e50;
+    background-color: #fff;
+}
+
+#progress_toggle {
+    border: 1px solid #2c3e50;
+    border-radius: 6px;
+}
+
+.toggle-label {
+    margin-top: 7px;
+    padding: 0;
 }

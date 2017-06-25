@@ -40,3 +40,28 @@ def is_email_valid(value):
     return False
 
 
+def is_job_duration_invalid(parent, duration):
+    if parent is None:
+        return True
+    job_duration = parent.duration
+    computed_duration = 0
+    for job_items in parent.job_detail:
+        computed_duration = job_items.duration + computed_duration
+
+    if computed_duration + duration > job_duration:
+        return True
+    return False
+
+
+def is_job_duration_invalid(parent, duration, item_id):
+    if parent is None:
+        return True
+    job_duration = parent.duration
+    computed_duration = 0
+    for job_item in parent.job_detail:
+        if job_item.job_details_id != item_id:
+            computed_duration = job_item.duration + computed_duration
+
+    if computed_duration + duration > job_duration:
+        return True
+    return False

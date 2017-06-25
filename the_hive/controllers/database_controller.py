@@ -87,6 +87,21 @@ class DatabaseController:
         else:
             return single_user
 
+    def get_available_users(self, serialize=False):
+        """
+        The function returns users who's availability is true
+
+        :param : None
+        :return: Users available for work
+        """
+        available_users = []
+        available_users = self.session.query(Users).filter_by(availability=True).all()
+
+        if serialize:
+            return [user.serialize() for user in available_users]
+        else:
+            return available_users
+
     def get_user_by_id(self, user_id=None, serialize=False):
         """
         If the user_id parameter is  provided, the application looks up the user with the provided id,
@@ -209,7 +224,6 @@ class DatabaseController:
         :param timestamp: set to true if timestamp is required
         :param duration: duration of job
         :param description: description of job
-        :param user: user associated with the job
         :return: The id of the new job
         """
 
@@ -223,6 +237,32 @@ class DatabaseController:
         self.session.commit()
 
         return created_job.job_id
+
+    def create_job_item(self,
+                        job_name=None,
+                        user_assign=None,
+                        duration=None,
+                        description=None):
+        """
+
+        The method creates and saves a new job to the database.
+
+        :param job_name: the parent job id
+        :param duration: duration of job
+        :param description: description of job
+        :param user_assign: user associated with the job
+        :return: The id of the new job item
+        """
+
+        created_job_item = JobsDetails(duration=duration,
+                                       job=job_name,
+                                       description=description,
+                                       user=user_assign)
+
+        self.session.add(created_job_item)
+        self.session.commit()
+
+        return created_job_item.job_details_id
 
     def update_rate(self, rate_id, new_rate):
         """
@@ -310,8 +350,6 @@ class DatabaseController:
             job = jobs[0]
 
         if job:
-            job.date_completed = new_job["date_completed"]
-            job.competed = new_job["competed"]
             job.verbatim = new_job["verbatim"]
             job.timestamp = new_job["timestamp"]
             job.duration = new_job["duration"]
@@ -319,6 +357,37 @@ class DatabaseController:
             self.session.add(job)
             self.session.commit()
             updated_job = self.get_job_by_id(job_id)[0]
+
+        return updated_job.serialize()
+
+    def update_job_item(self, job_item_id, new_job):
+        """
+        The application looks up the job item with the provided job_item_id
+        in order to update the job's details
+
+        :param job_item_id: The id of the job item intended to be updated
+        :param new_job: job object that holds updated details
+        :return: The job with the matching id.
+        """
+
+        updated_job = None
+        jobs = self.get_item_by_id(job_item_id)
+        job = None
+        if len(jobs) is not 1:
+            return updated_job
+        else:
+            job = jobs[0]
+
+        if job:
+            job.date_completed = new_job["date_completed"]
+            job.competed = new_job["competed"]
+            job.duration = new_job["duration"]
+            job.description = new_job["description"]
+            job.user = new_job["user"]
+            job.paid = new_job["paid"]
+            self.session.add(job)
+            self.session.commit()
+            updated_job = self.get_item_by_id(job_item_id)[0]
 
         return updated_job.serialize()
 
@@ -337,6 +406,22 @@ class DatabaseController:
             all_jobs = self.session.query(Jobs).order_by(Jobs.job_id).all()
         else:
             all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
+
+        if serialize:
+            return [job.serialize() for job in all_jobs]
+        else:
+            return all_jobs
+
+    def get_job_not_completed(self, serialize=False):
+        """
+        Returns all jobs that are still in progress
+
+        :param : None
+        :return: jobs not completed.
+        """
+
+        all_jobs = []
+        all_jobs = self.session.query(Jobs).filter(Jobs.competed == False).all()
 
         if serialize:
             return [job.serialize() for job in all_jobs]
@@ -405,6 +490,24 @@ class DatabaseController:
         if job_id:
             try:
                 job_list = self.session.query(Jobs).filter(Jobs.job_id == job_id).first()
+                self.session.delete(job_list)
+                self.session.commit()
+                return True
+            except Exception as ex:
+                return False
+
+    def delete_job_item(self, job_item_id):
+        """
+        The application looks up the job item with the provided id
+        in order to delete the job object from the database
+
+        :param job_item_id: The id of the job item intended to be deleted
+        :return: True if job object was deleted, else False.
+        """
+
+        if job_item_id:
+            try:
+                job_list = self.session.query(JobsDetails).filter(JobsDetails.job_details_id == job_item_id).first()
                 self.session.delete(job_list)
                 self.session.commit()
                 return True

@@ -11,7 +11,7 @@ Desc      : Model class that creates users and connects to database
 from datetime import datetime
 
 from flask_login import UserMixin
-from sqlalchemy import Column, String, Integer, Date
+from sqlalchemy import Column, String, Integer, Date, Boolean
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
 
@@ -28,6 +28,7 @@ class Users(Model, UserMixin):
     date_added = Column(Date, default=datetime.utcnow)
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
+    availability = Column(Boolean, default=True, nullable=False)
     user_detail = relationship("JobsDetails", backref="Users")
 
     def get_id(self):
