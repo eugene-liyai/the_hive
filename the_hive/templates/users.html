@@ -10,6 +10,18 @@
 {% endblock %}
 
 {% block dashboard_content%}
+
+<div class="row">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-info alert-style">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Alert!</strong> {{messages[0]}}.
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
 {% if user.role == 'ROLE_ADMIN' %}
 <div class="row">
     <div class="col-sm-3 add_job_div">
@@ -95,7 +107,7 @@
                 <h4 class="modal-title">Edit User ID {{user.user_id}}</h4>
               </div>
               <div class="modal-body">
-                  <form class="form-horizontal">
+                  <form class="form-horizontal" action="/admin/update_users/{{user.user_id}}" method="POST">
 
                         <div class="form-group">
                             <label class="control-label" for="edit_user_id">User ID</label>
@@ -103,20 +115,23 @@
                         </div>
                         <div class="form-group">
                             <label class=" control-label" for="edit_first_name">First Name</label>
-                            <input class="form-control input-sm" id="edit_first_name" type="text" value="{{user.first_name}}">
+                            <input class="form-control input-sm" id="edit_first_name" type="text" value="{{user.first_name}}"
+                                   autocomplete="off" required name="edit_first_name">
                         </div>
                         <div class="form-group">
                             <label class=" control-label" for="edit_last_name">Last Name</label>
-                            <input class="form-control input-sm" id="edit_last_name" type="text" value="{{user.last_name}}">
+                            <input class="form-control input-sm" id="edit_last_name" type="text" value="{{user.last_name}}"
+                                    autocomplete="off" required name="edit_last_name">
                         </div>
                         <div class="form-group">
                             <label class=" control-label" for="edit_email">Email</label>
-                            <input class="form-control input-sm" id="edit_email" type="text" value="{{user.email}}">
+                            <input class="form-control input-sm" id="edit_email" type="text" value="{{user.email}}" autocomplete="off"
+                                    required name="edit_email">
                         </div>
                         <div class="form-group">
-                          <label class="col-lg-2 control-label" for="edit_role">Role</label>
+                          <label class="col-lg-2 control-label" for="edit_role" style="padding: 0; margin-top: 9px">Role</label>
                             <div class="col-lg-10">
-                                <select class="form-control" id="edit_role" name="role">
+                                <select class="form-control input-sm" id="edit_role" name="edit_role">
                                     {% if user.role == 'ROLE_AGENT' %}
                                         <option value="agent" selected>Agent Account</option>
                                         <option value="admin">Admin Account</option>
@@ -129,7 +144,7 @@
                         </div>
                         <div class="form-group" style="margin-top: 70px;">
                             <hr>
-                            <button type="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </form>
@@ -139,7 +154,7 @@
           </div>
       </div>
 
-      <!-- Modal delete job-->
+      <!-- Modal delete user-->
       <div class="modal fade" id=delete_{{user.user_id}} role="dialog">
           <div class="modal-dialog">
 
@@ -153,7 +168,7 @@
                       <p><strong><i class="fa fa-info"></i> Are you sure you want to delete {{user.first_name}} {{user.last_name}}?</strong></p>
                       <div class="row text-center">
                           <div class="col-md-6">
-                              <a class="btn btn-primary btn-sm btn-block" data-dismiss="modal">Yes</a>
+                              <a href="{{ url_for('delete_user', user_id=user.user_id)}}" class="btn btn-primary btn-sm btn-block" >Yes</a>
                           </div>
                           <div class="col-md-6">
                               <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
@@ -177,31 +192,31 @@
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title"><i class="fa fa-user-plus" aria-hidden="true"></i> Add User</h4>
         </div>
-          <form class="form-horizontal" action="/admin/add_job" method="post">
+          <form class="form-horizontal" action="/admin/add_user" method="post">
               <fieldset>
                 <div class="modal-body">
                     <div class="form-group">
                       <label class="col-lg-3 control-label" for="first_name">First Name</label>
                         <div class="col-lg-9">
-                            <input class="form-control input-sm" type="text" name="first_name" id="first_name">
+                            <input class="form-control input-sm" type="text" name="first_name" id="first_name" autocomplete="off" required>
                         </div>
                     </div>
                     <div class="form-group">
                       <label class="col-lg-3 control-label" for="last_name">Last Name</label>
                         <div class="col-lg-9">
-                            <input class="form-control input-sm" type="text" name="last_name" id="last_name">
+                            <input class="form-control input-sm" type="text" name="last_name" id="last_name" autocomplete="off" required>
                         </div>
                     </div>
                     <div class="form-group">
                       <label for="email" class="col-lg-3 control-label">Email</label>
                       <div class="col-lg-9">
-                        <textarea class="form-control" rows="3" name="email" id="email"></textarea>
+                        <input class="form-control input-sm" name="email" id="email" autocomplete="off" required>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="col-lg-3 control-label" for="role">Role</label>
                         <div class="col-lg-9">
-                            <select class="form-control" id="role" name="role">
+                            <select class="form-control input-sm" id="role" name="role">
                                 <option value="agent" >Agent Account</option>
                                 <option value="admin" >Admin Account</option>
                             </select>
@@ -209,7 +224,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
               </fieldset>

@@ -134,11 +134,22 @@ def add_user():
         last_name = request.form['last_name']
         email = request.form['email']
         role = request.form['role']
-        password = request.form['password']
+
+        if is_email_valid(email) is False:
+            flash("Email provided is not valid")
+            return redirect(url_for('users'))
+
+        if has_white_space(first_name) or has_white_space(last_name):
+            flash("Names cannot have white space")
+            return redirect(url_for('users'))
+
+        password = generate_random_password_string()
         add_user_response = DATA_CONTROLLER.create_user(first_name, last_name, email, password, role)
         if add_user_response:
             flash("successfully added user {} {}".format(first_name, last_name))
-    return render_template("add_user.html")
+        else:
+            flash("unable to add user {} {}".format(first_name, last_name))
+    return redirect(url_for('users'))
 
 
 @login_required
@@ -154,10 +165,10 @@ def delete_user(user_id):
         return abort(403)
     try:
         if DATA_CONTROLLER.delete_user(user_id):
-            flash("deleted job '{}'".format(user_id))
+            flash("deleted user '{}'".format(user_id))
             return redirect(url_for('users'))
         else:
-            flash("failed to delete job '{}'".format(user_id))
+            flash("failed to delete user '{}'".format(user_id))
             return redirect(url_for('users'))
     except ValueError as err:
         print(err)
@@ -260,29 +271,39 @@ def update_users(user_id):
     """
     if request.method == 'POST':
 
+        role = 'ROLE_AGENT'
+        if request.form["edit_role"] == 'admin':
+            role = 'ROLE_ADMIN'
+
+        if is_email_valid(request.form["edit_email"]) is False:
+            flash("Email provided is not valid")
+            return redirect(url_for('users'))
+
+        if has_white_space(request.form["edit_first_name"]) or has_white_space(request.form["edit_last_name"]):
+            flash("Names cannot have white space")
+            return redirect(url_for('users'))
+
         new_user = {
-            "first_name": request.form["first_name"],
-            "last_name": request.form["last_name"],
-            "email": request.form["email"],
-            "role": request.form["role"],
+            "first_name": request.form["edit_first_name"],
+            "last_name": request.form["edit_last_name"],
+            "email": request.form["edit_email"],
+            "role": role,
             "date_modified": datetime.utcnow()
         }
 
         try:
             if user_id == current_user.user_id or current_user.role == 'ROLE_ADMIN':
                 DATA_CONTROLLER.update_user(user_id, new_user)
-                flash("updated user {} {}".format(request.form["first_name"], request.form["last_name"]))
-                return render_template('update_user.html')
+                flash("updated user {} {}".format(request.form["edit_first_name"], request.form["edit_last_name"]))
+                return redirect(url_for('users'))
             else:
                 return render_template('403.html'), 403
         except Exception as ex:
             print(ex)
-            flash("Error updating user {} {}".format(request.form["first_name"], request.form["last_name"]))
-            return render_template('update_user.html')
+            flash("Error updating user {} {}".format(request.form["edit_first_name"], request.form["edit_last_name"]))
+            return redirect(url_for('users'))
 
-    else:
-        user = DATA_CONTROLLER.get_user_by_id(user_id)
-        return render_template('update_user.html', user=user)
+    return redirect(url_for('users'))
 
 
 @login_required
@@ -492,6 +513,8 @@ def update_job_item(job_item_id):
         }
         try:
             DATA_CONTROLLER.update_job_item(job_item_id, new_job)
+            if paid and check_if_job_should_be_marked_as_paid(parent_job_detail[0], job_item_id):
+                DATA_CONTROLLER.update_paid_job(parent_job_detail[0].job_id)
             flash("updated job item '{}'".format(job_item_id))
             return redirect(url_for('job_items'))
         except Exception as ex:
@@ -693,9 +716,17 @@ def update_rate(rate_id):
     """
     if request.method == 'POST' and current_user.role == 'ROLE_ADMIN':
 
+        if has_white_space(request.form["edit_rate"]):
+            flash("Fields cannot have white space")
+            return redirect(url_for('rate'))
+
+        if is_numbers_only(request.form["edit_rate"]) is False:
+            flash("Rate must be an integer")
+            return redirect(url_for('rate'))
+
         new_rate = {
-            "rate": request.form["rate"],
-            "description": request.form["description"]
+            "rate": request.form["edit_rate"],
+            "description": request.form["edit_description"]
         }
 
         try:

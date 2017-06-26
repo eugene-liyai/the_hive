@@ -77,7 +77,7 @@
                 <h4 class="modal-title">Job Item ID {{job.job_id}}</h4>
                   <h4>
                         {% if job.competed %}
-                        <span class="label label-success"><i class="fa fa-calendar-check-o"></i> Completed</span>
+                        <span class="label label-success"><i class="fa fa-calendar-check-o"></i> Completed - ({{job.date_completed}})</span>
                         {% else %}
                         <span class="label label-warning"><i class="fa fa-calendar-times-o"></i> In Progess</span>
                         {% endif %}

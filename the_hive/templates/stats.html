@@ -151,7 +151,7 @@
                         <td>{{job.job_details_id}}</td>
                         <td>
                             {% if job.date_completed %}
-                            <p class="label label-info">Job Completed</p>
+                            <p class="label label-success">Completed {{job.date_completed}}</p>
                             {% else %}
                             <p class="label label-warning">Job in progress</p>
                             {% endif %}

@@ -8,6 +8,8 @@ Desc      : Acts as a service file for database population and db engine to be u
 # ============================================================================
 # necessary imports
 # ============================================================================
+from datetime import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -152,6 +154,8 @@ class DatabaseController:
             user.phone = new_user["role"]
             user.first_name = new_user["first_name"]
             user.last_name = new_user["last_name"]
+            user.date_modified = new_user["date_modified"]
+            user.role = new_user["role"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -530,6 +534,28 @@ class DatabaseController:
                 return {'status': False, 'User': None}
         else:
             return {'status': False, 'User': None}
+
+    def update_paid_job(self, job_id):
+        """
+        The application looks up the job with the provided job_id
+        in order to update the job's paid status
+
+        :param job_id: The id of the job intended to be updated
+        :return: The job with the matching id.
+        """
+        jobs = self.get_job_by_id(job_id)
+        if len(jobs) is not 1:
+            return False
+
+        job = jobs[0]
+        if job:
+            job.paid = True
+            job.competed = True
+            job.date_completed = datetime.now()
+            self.session.add(job)
+            self.session.commit()
+            return True
+        return False
 
     def populate_database(self):
 
