@@ -150,12 +150,17 @@ class DatabaseController:
             user = users[0]
 
         if user:
-            user.email = new_user["email"]
-            user.phone = new_user["role"]
-            user.first_name = new_user["first_name"]
-            user.last_name = new_user["last_name"]
-            user.date_modified = new_user["date_modified"]
-            user.role = new_user["role"]
+            if len(new_user) == 5:
+                user.email = new_user["email"]
+                user.first_name = new_user["first_name"]
+                user.last_name = new_user["last_name"]
+                user.date_modified = new_user["date_modified"]
+                user.role = new_user["role"]
+            else:
+                user.email = new_user["email"]
+                user.first_name = new_user["first_name"]
+                user.last_name = new_user["last_name"]
+                user.date_modified = new_user["date_modified"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -184,7 +189,7 @@ class DatabaseController:
             user = users[0]
 
         if user:
-            user.email = new_user["password"]
+            user.password = new_user["password"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -217,6 +222,7 @@ class DatabaseController:
                    verbatim=None,
                    timestamp=None,
                    duration=None,
+                   link=None,
                    description=None):
         """
 
@@ -228,6 +234,7 @@ class DatabaseController:
         :param timestamp: set to true if timestamp is required
         :param duration: duration of job
         :param description: description of job
+        :param link: job download link
         :return: The id of the new job
         """
 
@@ -236,6 +243,7 @@ class DatabaseController:
                            verbatim=verbatim,
                            timestamp=timestamp,
                            duration=duration,
+                           download_link=link,
                            description=description)
         self.session.add(created_job)
         self.session.commit()
@@ -246,6 +254,7 @@ class DatabaseController:
                         job_name=None,
                         user_assign=None,
                         duration=None,
+                        link=None,
                         description=None):
         """
 
@@ -254,6 +263,7 @@ class DatabaseController:
         :param job_name: the parent job id
         :param duration: duration of job
         :param description: description of job
+        :param link: job download link
         :param user_assign: user associated with the job
         :return: The id of the new job item
         """
@@ -261,6 +271,7 @@ class DatabaseController:
         created_job_item = JobsDetails(duration=duration,
                                        job=job_name,
                                        description=description,
+                                       download_link=link,
                                        user=user_assign)
 
         self.session.add(created_job_item)
@@ -358,6 +369,7 @@ class DatabaseController:
             job.timestamp = new_job["timestamp"]
             job.duration = new_job["duration"]
             job.description = new_job["description"]
+            job.download_link = new_job["link"]
             self.session.add(job)
             self.session.commit()
             updated_job = self.get_job_by_id(job_id)[0]
@@ -557,6 +569,31 @@ class DatabaseController:
             return True
         return False
 
+    def update_availability(self, user_id):
+        """
+        The application looks up the user with the provided id
+        in order to update the user's availability status
+
+        :param user_id: The id of the user intended to be updated
+        :return: The user with the matching id.
+        """
+        users = self.get_user_by_id(user_id)
+        if len(users) is not 1:
+            return False
+
+        user = users[0]
+        if user:
+            if user.availability:
+                user.availability = False
+                user.availability_date_update = datetime.utcnow()
+            else:
+                user.availability = True
+                user.availability_date_update = datetime.utcnow()
+            self.session.add(user)
+            self.session.commit()
+            return True
+        return False
+
     def populate_database(self):
 
         #
@@ -588,6 +625,7 @@ class DatabaseController:
                     verbatim=None,
                     timestamp=None,
                     duration=30,
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                     description='first job give to one person')
 
         job2 = Jobs(job_id='0104SG1SDYE3',
@@ -595,6 +633,7 @@ class DatabaseController:
                     verbatim=None,
                     timestamp=True,
                     duration=10,
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                     description='From 0min to 10min')
 
         job3 = Jobs(job_id='010DOISDU733',
@@ -602,6 +641,7 @@ class DatabaseController:
                     verbatim=True,
                     timestamp=True,
                     duration=50,
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                     description='From 0min to 50min')
 
         job4 = Jobs(job_id='01032DISDU733',
@@ -609,6 +649,7 @@ class DatabaseController:
                     verbatim=True,
                     timestamp=True,
                     duration=50,
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                     description='From 0min to 50min')
 
         job5 = Jobs(job_id='KSFFU9EHDU998',
@@ -616,6 +657,7 @@ class DatabaseController:
                     verbatim=True,
                     timestamp=False,
                     duration=18,
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                     description='From 0min to 18min')
 
         self.session.add(job1)
@@ -633,84 +675,98 @@ class DatabaseController:
                                   job_name=job4.job_name,
                                   description='from min 10 to min 40',
                                   user=user1.user_id,
+                                  download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                   job=job4.job_id)
 
         job_details2 = JobsDetails(duration=10,
                                    job_name=job2.job_name,
                                    description='whole file',
                                    user=user1.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job2.job_id)
 
         job_details3 = JobsDetails(duration=10,
                                    job_name=job4.job_name,
                                    description='from min 40 to min 50',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job4.job_id)
 
         job_details4 = JobsDetails(duration=10,
                                    job_name=job4.job_name,
                                    description='from min 0 to min 10',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job4.job_id)
 
         job_details5 = JobsDetails(duration=30,
                                    job_name=job1.job_name,
                                    description='whole file',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job1.job_id)
 
         job_details6 = JobsDetails(duration=5,
                                    job_name=job3.job_name,
                                    description='0 to 5 min',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job3.job_id)
 
         job_details7 = JobsDetails(duration=5,
                                    job_name=job3.job_name,
                                    description='5 to 10 min',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job3.job_id)
 
         job_details8 = JobsDetails(duration=5,
                                    job_name=job3.job_name,
                                    description='10 to 15 min',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job3.job_id)
 
         job_details9 = JobsDetails(duration=5,
                                    job_name=job3.job_name,
                                    description='15 to 20 min',
                                    user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                    job=job3.job_id)
 
         job_details10 = JobsDetails(duration=10,
                                     job_name=job3.job_name,
                                     description='20 to 30 min',
                                     user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                     job=job3.job_id)
 
         job_details11 = JobsDetails(duration=10,
                                     job_name=job3.job_name,
                                     description='30 to 40 min',
                                     user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                     job=job3.job_id)
 
         job_details12 = JobsDetails(duration=5,
                                     job_name=job3.job_name,
                                     description='40 to 45 min',
                                     user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                     job=job3.job_id)
 
         job_details13 = JobsDetails(duration=5,
                                     job_name=job3.job_name,
                                     description='45 to 50 min',
                                     user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                     job=job3.job_id)
 
         job_details14 = JobsDetails(duration=18,
                                     job_name=job5.job_name,
                                     description='whole file',
                                     user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
                                     job=job5.job_id)
 
         self.session.add(job_details1)

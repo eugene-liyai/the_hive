@@ -11,14 +11,15 @@ Desc      : Controller file processes request from the url endpoints
 # ============================================================================
 import os
 from math import ceil
-
 from datetime import datetime, timedelta, date
+
 from flask import render_template, url_for, request, redirect, flash, abort
 from flask_login import login_required, login_user, logout_user, current_user
 
 from the_hive import login_manager
 from the_hive.controllers.database_controller import DatabaseController
 from the_hive.util import *
+from the_hive.controllers.email_controller import send_email
 
 #
 # Database engine
@@ -29,6 +30,9 @@ db_engine = os.environ['THE_HIVE_SQLALCHEMY_DATABASE_URI']
 PAGE_SIZE = 10
 
 DATA_CONTROLLER = DatabaseController(db_engine)
+
+# administrator list
+ADMINS = ['info@bhiveweb.com']
 
 
 def initialize_database():
@@ -271,31 +275,54 @@ def update_users(user_id):
     """
     if request.method == 'POST':
 
-        role = 'ROLE_AGENT'
-        if request.form["edit_role"] == 'admin':
-            role = 'ROLE_ADMIN'
+        new_user = {}
 
-        if is_email_valid(request.form["edit_email"]) is False:
-            flash("Email provided is not valid")
-            return redirect(url_for('users'))
+        # Admin update directive
+        if current_user.role == "ROLE_ADMIN":
 
-        if has_white_space(request.form["edit_first_name"]) or has_white_space(request.form["edit_last_name"]):
-            flash("Names cannot have white space")
-            return redirect(url_for('users'))
+            if is_email_valid(request.form["edit_email"]) is False:
+                flash("Email provided is not valid")
+                return redirect(url_for('users'))
 
-        new_user = {
-            "first_name": request.form["edit_first_name"],
-            "last_name": request.form["edit_last_name"],
-            "email": request.form["edit_email"],
-            "role": role,
-            "date_modified": datetime.utcnow()
-        }
+            if has_white_space(request.form["edit_first_name"]) or has_white_space(request.form["edit_last_name"]):
+                flash("Names cannot have white space")
+                return redirect(url_for('users'))
+
+            role = 'ROLE_AGENT'
+            if request.form["edit_role"] == 'admin':
+                role = 'ROLE_ADMIN'
+
+            new_user = {
+                "first_name": request.form["edit_first_name"],
+                "last_name": request.form["edit_last_name"],
+                "email": request.form["edit_email"],
+                "role": role,
+                "date_modified": datetime.utcnow()
+            }
+        # User update directive
+        else:
+            if is_email_valid(request.form["edit_email"]) is False:
+                flash("Email provided is not valid")
+                return redirect(url_for('profile'))
+
+            if has_white_space(request.form["edit_first_name"]) or has_white_space(request.form["edit_last_name"]):
+                flash("Names cannot have white space")
+                return redirect(url_for('profile'))
+
+            new_user = {
+                "first_name": request.form["edit_first_name"],
+                "last_name": request.form["edit_last_name"],
+                "email": request.form["edit_email"],
+                "date_modified": datetime.utcnow()
+            }
 
         try:
-            if user_id == current_user.user_id or current_user.role == 'ROLE_ADMIN':
+            if current_user.user_id == int(user_id) or current_user.role == 'ROLE_ADMIN':
                 DATA_CONTROLLER.update_user(user_id, new_user)
                 flash("updated user {} {}".format(request.form["edit_first_name"], request.form["edit_last_name"]))
-                return redirect(url_for('users'))
+                if current_user.role == 'ROLE_ADMIN':
+                    return redirect(url_for('users'))
+                return redirect(url_for('profile'))
             else:
                 return render_template('403.html'), 403
         except Exception as ex:
@@ -315,31 +342,53 @@ def update_user_password(user_id):
     :return: returns success message if method executes successfully
     """
     if request.method == 'POST':
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
+        current_password = request.form["current_password"]
+        password = request.form["new_password"]
+        confirm_password = request.form["confirm_new_password"]
+
+        if current_password == '' \
+                or current_password is None \
+                or password == ''\
+                or password is None \
+                or confirm_password == '' \
+                or confirm_password is None:
+            flash("Fields cannot be blank")
+            return redirect(url_for('profile'))
+
+        if current_user.check_user_password(current_password) is False:
+            flash("Current password does not match this account's password")
+            return redirect(url_for('profile'))
+
+        if len(password) <= 6:
+            flash("Password must be at least 7 characters long")
+            return redirect(url_for('profile'))
+
         if password != confirm_password:
             flash("password provided does not match")
-            return render_template('update_user.html')
+            return redirect(url_for('profile'))
+
+        if password == current_password:
+            flash("new password cannot be same as current password")
+            return redirect(url_for('profile'))
 
         new_user = {
             "password": password
         }
 
         try:
-            if user_id == current_user.user_id or current_user.role == 'ROLE_ADMIN':
+            if int(user_id) == current_user.user_id or current_user.role == 'ROLE_ADMIN':
                 DATA_CONTROLLER.update_password(user_id, new_user)
                 flash("updated password")
-                return render_template('update_user.html')
+                return redirect(url_for('profile'))
             else:
                 return render_template('403.html'), 403
         except Exception as ex:
             print(ex)
-            flash("Error updating user {} {}".format(request.form["first_name"], request.form["last_name"]))
-            return render_template('update_user.html')
+            flash("Error updating password for {} {}".format(current_user.first_name, current_user.last_name))
+            return redirect(url_for('profile'))
 
     else:
-        user = DATA_CONTROLLER.get_user_by_id(user_id)
-        return render_template('update_user.html', user=user)
+        return redirect(url_for('profile'))
 
 
 @login_required
@@ -360,6 +409,7 @@ def add_job():
         verbatim = request.form.get('verbatim')
         timestamp = request.form.get('timestamp')
         duration = request.form['duration']
+        link = request.form['link']
         description = request.form['description']
 
         if is_numbers_only(duration) is False:
@@ -375,6 +425,7 @@ def add_job():
                                                          verbatim,
                                                          timestamp,
                                                          duration,
+                                                         link,
                                                          description)
             flash("Added job '{}'".format(job_id_response))
             return redirect(url_for('jobs'))
@@ -402,20 +453,26 @@ def add_job_item():
         user_assign = request.form['user_assign']
         duration = request.form.get('item_duration')
         description = request.form.get('item_description')
+        user_assign_email = DATA_CONTROLLER.get_user_by_id(int(user_assign))
 
         if is_numbers_only(duration) is False:
             flash("Duration can only be an integer")
             return redirect(url_for('job_items'))
 
         parent_job_detail = DATA_CONTROLLER.get_job_by_id(job_id=job_name)
-        if is_job_duration_invalid(parent_job_detail[0], int(duration)):
+        link = parent_job_detail[0].download_link
+        if is_job_duration_item_invalid(parent_job_detail[0], int(duration)):
             flash("The job duration is invalid, does not match parent")
             return redirect(url_for('job_items'))
 
         try:
+            user_job_notification(current_user,
+                                  user_assign_email[0],
+                                  link)
             job_id_response = DATA_CONTROLLER.create_job_item(job_name,
                                                               user_assign,
                                                               duration,
+                                                              link,
                                                               description)
             flash("Added job item '{}'".format(job_id_response))
             return redirect(url_for('job_items'))
@@ -455,7 +512,8 @@ def update_job(job_id):
             "verbatim": verbatim,
             "timestamp": timestamp,
             "duration": request.form["edit_duration"],
-            "description": request.form["edit_description"]
+            "description": request.form["edit_description"],
+            "link": request.form["edit_link"]
         }
 
         try:
@@ -493,6 +551,7 @@ def update_job_item(job_item_id):
             return redirect(url_for('job_items'))
 
         parent_job_detail = DATA_CONTROLLER.get_job_by_id(job_id=request.form["job_name"])
+        user_assign_email = DATA_CONTROLLER.get_user_by_id(int(request.form["user"]))
         if is_job_duration_invalid(parent_job_detail[0],
                                    int(request.form["edit_item_duration"]),
                                    int(request.form["job_item_id"])):
@@ -512,6 +571,9 @@ def update_job_item(job_item_id):
             "paid": paid
         }
         try:
+            user_job_notification(current_user,
+                                  user_assign_email[0],
+                                  parent_job_detail[0].link)
             DATA_CONTROLLER.update_job_item(job_item_id, new_job)
             if paid and check_if_job_should_be_marked_as_paid(parent_job_detail[0], job_item_id):
                 DATA_CONTROLLER.update_paid_job(parent_job_detail[0].job_id)
@@ -777,6 +839,37 @@ def rate(rate_id=None):
 @login_required
 def availability():
     return render_template('availability.html', user=current_user)
+
+
+@login_required
+def update_availability(user_id):
+    """
+
+    The method updates user availability.
+
+    :param user_id: user id intended to be updated
+    :return: update status
+    """
+
+    if current_user.user_id == int(user_id):
+        try:
+            if DATA_CONTROLLER.update_availability(user_id):
+                flash("Updated user availability")
+                return redirect(url_for('availability'))
+            flash("Unable to update user availability")
+            return redirect(url_for('availability'))
+        except:
+            flash("Error updating availability")
+            return redirect(url_for('availability'))
+    else:
+        return abort(401)
+
+
+def user_job_notification(sender, recipient, file):
+    send_email("the-hive Email Alert",
+               ADMINS[0],
+               [recipient.email, sender.email],
+               render_template("notificationTemplate.html", recipient=recipient, file=file))
 
 
 def page_not_found(e):

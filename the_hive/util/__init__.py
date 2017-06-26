@@ -12,6 +12,7 @@ Desc      : Gives utility activities.
 import re
 import random
 import string
+from threading import Thread
 
 
 _EMAIL_PATTERN = r"([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)"
@@ -57,7 +58,7 @@ def check_if_job_should_be_marked_as_paid(parent, job_item_update):
         return True
 
 
-def is_job_duration_invalid(parent, duration):
+def is_job_duration_item_invalid(parent, duration):
     if parent is None:
         return True
     job_duration = parent.duration
@@ -82,3 +83,10 @@ def is_job_duration_invalid(parent, duration, item_id):
     if computed_duration + duration > job_duration:
         return True
     return False
+
+
+def async(f):
+    def wrapper(*args, **kwargs):
+        thr = Thread(target=f, args=args, kwargs=kwargs)
+        thr.start()
+    return wrapper

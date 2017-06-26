@@ -66,7 +66,7 @@
           </td>
         </tr>
 
-      <!-- Modal edit edit job -->
+      <!-- Modal edit job -->
       <div class="modal fade" id=edit_{{job.job_id}} role="dialog">
           <div class="modal-dialog">
 
@@ -100,6 +100,11 @@
                             <label class=" control-label" for="edit_description">Description</label>
                             <input class="form-control input-sm" id="edit_description" type="text" value="{{job.description}}"
                                 name="edit_description" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_description">Download link</label>
+                            <input class="form-control input-sm" id="edit_link" type="text" value="{{job.link}}"
+                                name="edit_link" autocomplete="false">
                         </div>
                         <div class="form-group">
                             <label for="edit_verbatim" class="btn btn-primary btn-sm">
@@ -198,6 +203,13 @@
                       <div class="col-lg-10">
                         <textarea class="form-control" rows="3" name="description" id="description" autocomplete="off"></textarea>
                       </div>
+                    </div>
+                    <div class="form-group">
+                            <label class=" control-label col-lg-2" for="edit_description">Download link</label>
+                            <div class="col-lg-10">
+                            <input class="form-control input-sm" id="link" type="text"
+                                   name="link" autocomplete="off">
+                            </div>
                     </div>
                     <div class="form-group">
                       <label class="col-lg-2 control-label" >Verbatim</label>

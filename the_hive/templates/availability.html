@@ -10,6 +10,17 @@
 
 {% block dashboard_content %}
     <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-dismissible alert-info alert-style">
+                  <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  <strong>Alert!</strong> {{messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-12">
             <div class="well well-sm profile-well">
                 <div class="row">
@@ -20,11 +31,11 @@
                         <h3>
                             {{user.first_name}} {{user.last_name}}
                         </h3>
-                        <cite title="San Francisco, USA"> <i class="fa fa-cogs"></i> <strong>Account - </strong>
-                            {% if user.role == 'ROLE_AGENT' %}
-                            Agent
+                        <cite title="San Francisco, USA"> <i class="fa fa-calendar"></i> <strong>Date updated - </strong>
+                            {% if user.availability_date_update %}
+                            {{user.availability_date_update}}
                             {% else %}
-                            Admin
+                            Not Updated
                             {% endif %}
                             </cite>
                         <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
@@ -35,8 +46,17 @@
                                 <div class="col-sm-7 col-md-7">
                                     <div class="input-group">
                                         <div id="availability_btn" class="btn-group">
-                                            <a class="btn btn-success btn-sm active" data-toggle="available" data-title="Y">YES</a>
-                                            <a class="btn btn-danger btn-sm notActive" data-toggle="available" data-title="N">NO</a>
+                                            {% if user.availability %}
+                                            <a href="{{ url_for('update_availability', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm active" data-toggle="available" data-title="Y">YES</a>
+                                            <a href="{{ url_for('update_availability', user_id=user.user_id )}}"
+                                               class="btn btn-danger btn-sm notActive" data-toggle="available" data-title="N">NO</a>
+                                            {% else %}
+                                            <a href="{{ url_for('update_availability', user_id=user.user_id )}}"
+                                               class="btn btn-success btn-sm notActive" data-toggle="available" data-title="Y">YES</a>
+                                            <a href="{{ url_for('update_availability', user_id=user.user_id )}}"
+                                               class="btn btn-danger btn-sm active" data-toggle="available" data-title="N">NO</a>
+                                            {% endif %}
                                         </div>
                                         <input type="hidden" name="available" id="available">
                                     </div>

@@ -27,6 +27,7 @@ class Jobs(Model):
     timestamp = Column(Boolean, default=False, nullable=False)
     paid = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
+    download_link = Column(String, nullable=False)
     description = Column(Text)
     job_detail = relationship("JobsDetails", backref="Jobs")
 
@@ -45,6 +46,7 @@ class Jobs(Model):
             "description": self.description,
             "date_created": self.date_created.isoformat() if self.date_created else "",
             "paid": self.paid,
+            "link": self.download_link,
             "date_completed": self.date_completed.isoformat() if self.date_completed else "",
             "job_details": [job.serialize() for job in self.job_detail]
         }

@@ -10,11 +10,13 @@ Desc      : Creates and launch the Flask application
 # ============================================================================
 from flask import Flask
 from flask_login import LoginManager
+from flask_mail import Mail
 
 from the_hive.config import app_config
 
 app = Flask(__name__)
 app.config.from_object(app_config['development'])
+mail = Mail(app)
 
 # Configure authentication
 login_manager = LoginManager()

@@ -29,6 +29,7 @@ class Users(Model, UserMixin):
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
     availability = Column(Boolean, default=True, nullable=False)
+    availability_date_update = Column(Date)
     user_detail = relationship("JobsDetails", backref="Users")
 
     def get_id(self):
@@ -58,5 +59,7 @@ class Users(Model, UserMixin):
             "date_added": self.date_added.isoformat() if self.date_added else "",
             "date_modified": self.date_modified.isoformat() if self.date_modified else "",
             "role": self.role,
+            "availability": self.availability,
+            "availability_update": self.availability_date_update,
             "job_details": [job.serialize() for job in self.user_detail]
         }

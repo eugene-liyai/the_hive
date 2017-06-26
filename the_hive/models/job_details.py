@@ -24,6 +24,7 @@ class JobsDetails(Model):
     date_completed = Column(Date)
     competed = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
+    download_link = Column(String, nullable=False)
     description = Column(Text)
     user = Column(Integer, ForeignKey('Users.user_id'))
     job = Column(String, ForeignKey('Jobs.job_id'))
@@ -42,6 +43,7 @@ class JobsDetails(Model):
             "description": self.description,
             "date_created": self.date_created.isoformat() if self.date_created else "",
             "date_completed": self.date_completed.isoformat() if self.date_completed else "",
+            "link": self.download_link,
             "user": self.user,
             "job": self.job
         }
