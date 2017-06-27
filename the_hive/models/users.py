@@ -29,6 +29,7 @@ class Users(Model, UserMixin):
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
     availability = Column(Boolean, default=True, nullable=False)
+    account_access = Column(Boolean, default=True, nullable=False)
     availability_date_update = Column(Date)
     user_detail = relationship("JobsDetails", backref="Users")
 
@@ -61,5 +62,6 @@ class Users(Model, UserMixin):
             "role": self.role,
             "availability": self.availability,
             "availability_update": self.availability_date_update,
+            "account_access": self.account_access,
             "job_details": [job.serialize() for job in self.user_detail]
         }
