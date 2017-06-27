@@ -81,11 +81,46 @@
                           {% endif %}
                       </span></p>
                       <p><i class="fa fa-calendar"></i> Date Joined <span>{{user.date_added}}</span></p>
-                      <p><i class="fa fa-user-times"></i> Block user
-                          <span>
-                              <input id="block_user_btn" type="checkbox" value="">
-                          </span>
+                      <p>
+                          {% if user.availability %}
+                          <i class="fa fa-check"></i> Available for work <span class="label label-success">{{user.availability}}</span>
+                          {% else %}
+                          <i class="fa fa-times"></i> Available for work <span class="label label-warning">{{user.availability}}</span>
+                          {% endif %}
                       </p>
+                      <p><i class="fa fa-calendar-check-o"></i> Last availability update
+                          {% if user.availability_update %}
+                            <span>{{user.availability_update }}</span>
+                          {% else %}
+                            <span>Never updated availability</span>
+                          {% endif %}
+                      </p>
+                      <div class="form-group">
+                            <label class="col-sm-3 col-md-3 control-label toggle-label" style="padding-left: 20px;">
+                                <i class="fa fa-user-times"></i> Block User?
+                            </label>
+                            <div class="col-sm-9 col-md-9 text-right">
+                                <div class="input-group" style="float: right">
+                                    <div id="progress_toggle" class="btn-group">
+                                        {% if user.role != 'ROLE_ADMIN'%}
+                                            {% if user.account_access %}
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm active" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-danger btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="False">No</a>
+                                            {% else %}
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-danger btn-sm active" data-toggle="progress{{user.user_id}}" data-title="false">No</a>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="label label-info"><i class="fa fa-remove"></i> Cannot block admin</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                   </div>
               </div>
               <div class="modal-footer">
@@ -244,4 +279,5 @@
     <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/tables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/table-toggle.js') }}"></script>
 {% endblock %}

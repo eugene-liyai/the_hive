@@ -865,6 +865,30 @@ def update_availability(user_id):
         return abort(401)
 
 
+@login_required
+def update_user_access(user_id):
+    """
+
+    The method updates user availability.
+
+    :param user_id: user id intended to be updated
+    :return: update status
+    """
+
+    if current_user.role == 'ROLE_ADMIN':
+        try:
+            if DATA_CONTROLLER.update_user_access(user_id):
+                flash("Updated user access to platform")
+                return redirect(url_for('users'))
+            flash("Unable to update user access")
+            return redirect(url_for('users'))
+        except:
+            flash("Error updating user access")
+            return redirect(url_for('users'))
+    else:
+        return abort(401)
+
+
 def user_job_notification(sender, recipient, file):
     send_email("the-hive Email Alert",
                ADMINS[0],

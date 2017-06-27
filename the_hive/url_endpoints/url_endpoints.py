@@ -9,7 +9,7 @@ Desc      : Routing url endpoints
 # ============================================================================
 
 from the_hive.views.view import login, add_user, get_user_jobs, update_users, update_user_password, delete_user, users
-from the_hive.views.view import page_not_found, server_error, delete_job_item, index, logout, stats, job_items, update_job_item
+from the_hive.views.view import page_not_found, update_user_access, delete_job_item, index, logout, stats, job_items, update_job_item
 from the_hive.views.view import delete_job, update_job, add_job, jobs, profile, availability, add_job_item
 from the_hive.views.view import rate, update_rate, help_page, update_availability
 
@@ -38,6 +38,8 @@ def initialize_api_routes(app):
         app.add_url_rule('/availability', 'availability', availability, methods=['GET', 'POST'])
         app.add_url_rule('/update_availability/<string:user_id>', 'update_availability',
                          update_availability, methods=['GET'])
+        app.add_url_rule('/update_user_access/<string:user_id>', 'update_user_access',
+                         update_user_access, methods=['GET'])
         app.add_url_rule('/admin/update_rate/<string:rate_id>', 'update_rate', update_rate, methods=['GET', 'POST'])
         app.add_url_rule('/admin/update_users/<string:user_id>', 'update_users', update_users, methods=['POST', 'GET'])
         app.add_url_rule('/update_user/<string:user_id>', 'update_users', update_users, methods=['POST', 'GET'])

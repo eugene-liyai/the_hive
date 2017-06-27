@@ -540,7 +540,7 @@ class DatabaseController:
         """
         if email and password:
             user = self.get_user_by_email(email=email)
-            if user and user.check_user_password(password):
+            if user and user.check_user_password(password) and user.account_access:
                 return {'status': True, 'User': user}
             else:
                 return {'status': False, 'User': None}
@@ -593,6 +593,29 @@ class DatabaseController:
             self.session.commit()
             return True
         return False
+
+    def update_user_access(self, user_id):
+            """
+            The application looks up the user with the provided id
+            in order to update the user's access to the platform
+    
+            :param user_id: The id of the user intended to be updated
+            :return: The user with the matching id.
+            """
+            users = self.get_user_by_id(user_id)
+            if len(users) is not 1:
+                return False
+
+            user = users[0]
+            if user:
+                if user.account_access:
+                    user.account_access = False
+                else:
+                    user.account_access = True
+                self.session.add(user)
+                self.session.commit()
+                return True
+            return False
 
     def populate_database(self):
 
