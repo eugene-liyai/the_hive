@@ -10,7 +10,7 @@ Desc      : Acts as a service file for database population and db engine to be u
 # ============================================================================
 from datetime import datetime
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 from the_hive.models.users import Users
@@ -419,7 +419,7 @@ class DatabaseController:
         all_jobs = []
 
         if job_id is None:
-            all_jobs = self.session.query(Jobs).order_by(Jobs.job_id).all()
+            all_jobs = self.session.query(Jobs).order_by(desc(Jobs.date_created)).all()
         else:
             all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
 
@@ -456,7 +456,7 @@ class DatabaseController:
         all_jobs = []
 
         if item_id is None:
-            all_jobs = self.session.query(JobsDetails).order_by(JobsDetails.job_details_id).all()
+            all_jobs = self.session.query(JobsDetails).order_by(desc(JobsDetails.date_created)).all()
         else:
             if int(item_id) < 0:
                 return all_jobs
@@ -481,7 +481,7 @@ class DatabaseController:
         all_jobs = []
 
         if job_id is None:
-            all_jobs = self.session.query(Jobs).filter(Jobs.user == user).order_by(Jobs.job_id).all()
+            all_jobs = self.session.query(Jobs).filter(Jobs.user == user).order_by(desc(Jobs.date_created)).all()
         else:
             if int(job_id) < 0:
                 return all_jobs

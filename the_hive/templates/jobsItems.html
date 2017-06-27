@@ -29,6 +29,11 @@
             <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job_item"><i class="fa fa-sitemap" aria-hidden="true"></i> Add Job Item</button>
         </div>
     </div>
+    <div class="col-sm-9 add_job_div text-right">
+        <div class="dataTables_length">
+            <button class="btn-primary add-btn" data-toggle="modal" id="summary-btn" data-rate="{{rates.rate}}" data-target="#summary"><i class="fa fa-list-ul" aria-hidden="true"></i> Summary</button>
+        </div>
+    </div>
 </div>
 {% endif %}
 
@@ -36,10 +41,11 @@
 <table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
   <thead class="thead-inverse">
     <tr>
+        <th><i class="fa fa-check"></i></th>
         <th><i class="fa fa-hashtag"></i> Job ID</th>
         <th><i class="fa fa-sitemap"></i> Job Item ID</th>
         <th><i class="fa fa-calendar"></i> Date Added</th>
-        <th><i class="fa fa-list"></i> Description</th>
+        <th><i class="fa fa-user"></i> Agent</th>
         <th><i class="fa fa-history"></i> Duration</th>
         <th><i class="fa fa-money"></i> Paid</th>
         <th><i class="fa fa-mouse-pointer"></i> Action</th>
@@ -48,11 +54,18 @@
       <tbody>
       {% for job in job_items %}
         <tr>
+          <td><input type="checkbox" class="checkbox_select" id="select_{{job.job_details_id}}"></td>
           <td>{{job.job}}</td>
           <td>{{job.job_details_id}}</td>
           <td>{{job.date_created}}</td>
-          <td>{{job.description}}</td>
-          <td>{{job.duration}}</td>
+          <td>
+              {% for user in users%}
+                {% if user.user_id == job.user %}
+                    {{user.first_name}} {{user.last_name}}
+                {% endif %}
+              {% endfor %}
+          </td>
+          <td class="duration">{{job.duration}}</td>
           <td>
               {% if job.paid == False %}
                 <i class="fa fa-times-circle-o text-warning"></i>
@@ -192,7 +205,7 @@
       </tbody>
 </table>
 
-    <!-- Modal add job item-->
+  <!-- Modal add job item-->
   <div class="modal fade" id="add_job_item" role="dialog">
     <div class="modal-dialog">
 
@@ -244,6 +257,32 @@
                 </div>
               </fieldset>
           </form>
+      </div>
+
+    </div>
+  </div>
+
+    <!-- view jobs summary-->
+  <div class="modal fade" id="summary" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Summary</h4>
+        </div>
+        <div class="modal-body">
+            <div class="job-container">
+                <h4><i class="fa fa-list-ul"></i> Jobs Summary</h4>
+                <p class="description">Sum of selected jobs</p>
+                <p><i class="fa fa-clock-o"></i> Total Duration <span id="total-duration"></span></p>
+                <p><i class="fa fa-dollar"></i> Sum Total <span id="sum-total"></span></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
       </div>
 
     </div>

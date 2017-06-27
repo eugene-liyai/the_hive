@@ -573,7 +573,7 @@ def update_job_item(job_item_id):
         try:
             user_job_notification(current_user,
                                   user_assign_email[0],
-                                  parent_job_detail[0].link)
+                                  parent_job_detail[0].download_link)
             DATA_CONTROLLER.update_job_item(job_item_id, new_job)
             if paid and check_if_job_should_be_marked_as_paid(parent_job_detail[0], job_item_id):
                 DATA_CONTROLLER.update_paid_job(parent_job_detail[0].job_id)
@@ -649,7 +649,9 @@ def job_items(item_id=None):
     if current_user.role != 'ROLE_ADMIN':
         return abort(403)
 
-    jobs = DATA_CONTROLLER.get_item_by_id(item_id=item_id, serialize=True)
+    jobs = DATA_CONTROLLER.get_item_by_id(item_id=item_id, serialize=False)
+    users = DATA_CONTROLLER.get_user_by_id(serialize=True)
+    rates = DATA_CONTROLLER.get_rate_by_id(serialize=True)[0]
     all_inprogress_jobs = DATA_CONTROLLER.get_job_not_completed(serialize=True)
     agents = DATA_CONTROLLER.get_available_users(serialize=True)
     page = request.args.get("limit")
@@ -673,6 +675,8 @@ def job_items(item_id=None):
                            user=current_user,
                            pages=pages,
                            job_items=jobs,
+                           users=users,
+                           rates=rates,
                            inprogress=all_inprogress_jobs,
                            agents=agents)
 
