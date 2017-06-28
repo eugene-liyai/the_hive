@@ -26,8 +26,11 @@
             <table style="padding: 10px;font-size:14px; width:100%;">
               <tr>
                 <td style="padding:10px;font-size:14px; width:100%;">
-                    <p>Hi {{recipient.first_name}},</p>
-                    <p><br /> A Job has been assigned to your account, Click the button below to view more details and the link to download the file</p>
+                    <p>Hi {{recipient_firstname}},</p>
+                    <p><br /> An account has been created under this email account</p><br />
+                    <p>Your username is -> {{recipient_email}}</p>
+                    <p>Your password is -> {{password}}</p>
+                    <br />
                     <p>
                         <a href="{{ url_for('index', _external=True) }}" target="_blank" class="btn btn-danger block-center"
                             style="
@@ -61,8 +64,6 @@
 					    Go to the-hive
 					</a>
                     </p>
-
-                    <p>Media download link -> {{file}}</p><br />
 
                     <p> If you have suggestions that would help us improve your experience,
                     please get in touch <span style="color: #195e88">it@bhiveweb.com</span></p><br />

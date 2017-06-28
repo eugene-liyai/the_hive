@@ -138,7 +138,11 @@ def add_user():
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
-        role = request.form['role']
+        form_role = request.form['role']
+
+        role = 'ROLE_AGENT'
+        if form_role == 'admin':
+            role = 'ROLE_ADMIN'
 
         if is_email_valid(email) is False:
             flash("Email provided is not valid")
@@ -149,6 +153,7 @@ def add_user():
             return redirect(url_for('users'))
 
         password = generate_random_password_string()
+        user_add_account_notification(current_user, email, first_name, password)
         add_user_response = DATA_CONTROLLER.create_user(first_name, last_name, email, password, role)
         if add_user_response:
             flash("successfully added user {} {}".format(first_name, last_name))
@@ -899,6 +904,16 @@ def user_job_notification(sender, recipient, file):
                ADMINS[0],
                [recipient.email, sender.email],
                render_template("notificationTemplate.html", recipient=recipient, file=file))
+
+
+def user_add_account_notification(sender, recipient_email, recipient_firstname, password):
+    send_email("the-hive New Account",
+               ADMINS[0],
+               [recipient_email, sender.email],
+               render_template("accountCreateTemplate.html",
+                               recipient_firstname=recipient_firstname,
+                               recipient_email=recipient_email,
+                               password=password))
 
 
 def page_not_found(e):
