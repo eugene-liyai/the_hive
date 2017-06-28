@@ -114,12 +114,12 @@
                         <div class="form-group">
                             <label class="control-label" for="edit_user_assign">Reassign</label>
                                 <select class="form-control input-sm" id="edit_user_assign" name="user">
-                                    {% for agent in agents %}
-                                        {% if job.user == agent.user_id %}
-                                        <option value={{agent.user_id}} selected>{{agent.first_name}} {{agent.last_name}}</option>
+                                    {% for user in users %}
+                                        {% if job.user == user.user_id %}
+                                        <option value={{user.user_id}} selected>{{user.first_name}} {{user.last_name}}</option>
                                         {% endif %}
-                                        {% if job.user != agent.user_id %}
-                                        <option value={{agent.user_id}} >{{agent.first_name}} {{agent.last_name}}</option>
+                                        {% if job.user != user.user_id %}
+                                        <option value={{user.user_id}} >{{user.first_name}} {{user.last_name}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>

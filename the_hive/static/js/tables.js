@@ -17,13 +17,46 @@ $(document).ready(function() {
          }
     });
 
+    var lastChecked = null;
+    var $chkboxes = $('.checkbox_select');
+    $chkboxes.click(function(e) {
+        if(!lastChecked) {
+            lastChecked = this;
+            return;
+        }
+
+        if(e.shiftKey) {
+            var start = $chkboxes.index(this);
+            var end = $chkboxes.index(lastChecked);
+
+            $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+            for ( var i = 0; i<$chkboxes.length; i++){
+                var parent = $($chkboxes[i]).parent().closest('tr');
+                if ($($chkboxes[i]).is(':checked')){
+                    parent.css('background-color', '#eeeed4');
+                    parent.css('border-bottom', '1px solid #fff');
+                    parent.addClass('selected-row');
+                }else {
+                    parent.css('background-color', '');
+                    parent.css('border-bottom', '');
+                    parent.removeClass('selected-row');
+                }
+            }
+
+        }
+
+        lastChecked = this;
+    });
+
     $('.checkbox_select').click(function () {
         var parent = $(this).parent().closest('tr');
         if ( $(this).is(':checked') ) {
             parent.css('background-color', '#eeeed4');
+            parent.css('border-bottom', '1px solid #fff');
             parent.addClass('selected-row');
         } else {
             parent.css('background-color', '');
+            parent.css('border-bottom', '');
             parent.removeClass('selected-row');
         }
     });

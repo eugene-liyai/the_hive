@@ -105,14 +105,14 @@
                                         {% if user.role != 'ROLE_ADMIN'%}
                                             {% if user.account_access %}
                                             <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
-                                               class="btn btn-success btn-sm active" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
-                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
-                                               class="btn btn-danger btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="False">No</a>
-                                            {% else %}
-                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
                                                class="btn btn-success btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
                                             <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
                                                class="btn btn-danger btn-sm active" data-toggle="progress{{user.user_id}}" data-title="false">No</a>
+                                            {% else %}
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm active" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-danger btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="False">No</a>
                                             {% endif %}
                                         {% else %}
                                             <span class="label label-info"><i class="fa fa-remove"></i> Cannot block admin</span>

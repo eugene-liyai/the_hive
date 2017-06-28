@@ -53,9 +53,7 @@
                       <h6><i class="fa fa-info"></i> Item No: {{job.job_details_id}}</h6>
                       <p class="description">{{job.description}}</p>
                       <p><i class="fa fa-clock-o"></i> Duration <span>{{job.duration}}</span></p>
-                      <p><i class="fa fa-quote-left"></i> Verbatim <span class="label label-success">True</span></p>
-                      <p><i class="fa fa-history"></i> Timestamp <span class="label label-warning">False</span></p>
-                      <p><i class="fa fa-calendar"></i> Date uploaded <span>4 hrs ago</span></p>
+                      <p><i class="fa fa-calendar"></i> Date uploaded <span>{{job.date_created}}</span></p>
                       <p><i class="fa fa-money"></i> Paid <span>
                           {% if job.paid == False %}
                             <i class="fa fa-times-circle-o text-warning"></i>
@@ -64,7 +62,13 @@
                           {% endif %}
                       </span>
                       </p>
-                      <p><i class="fa fa-calendar-check-o"></i> Completed <span>1 min ago</span></p>
+                      <p><i class="fa fa-calendar-check-o"></i> Completed
+                          {% if job.competed %}
+                          <span class="label label-success">Completed {{job.date_completed}}</span>
+                          {% else %}
+                          <span class="label label-warning">In Progress</span>
+                          {% endif %}
+                      </p>
                       <p><i class="fa fa-user"></i> Assigned to <span>{{user.first_name}} {{user.last_name}}</span></p>
                   </div>
               </div>

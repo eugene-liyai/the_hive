@@ -106,7 +106,8 @@ def index():
         agents = DATA_CONTROLLER.get_user_by_id()
         return render_template('adminUserJobs.html', user=current_user, users=agents)
     elif current_user.role == 'ROLE_AGENT':
-        return render_template('userJobs.html', user=current_user)
+        jobs = DATA_CONTROLLER.get_job_by_id(job_id=None, serialize=True)
+        return render_template('userJobs.html', user=current_user, jobs=jobs)
     return render_template('index.html')
 
 
