@@ -22,8 +22,8 @@ def send_async_email(app, msg):
         mail.send(msg)
 
 
-def send_email(subject, sender, recipients, html_body):
-    msg = Message(subject, sender=sender, recipients=recipients)
+def send_email(subject, sender, recipients, html_body, bcc):
+    msg = Message(subject, sender=sender, recipients=recipients, bcc=bcc)
     msg.html = html_body
     thr = Thread(target=send_async_email, args=[app, msg])
     thr.start()

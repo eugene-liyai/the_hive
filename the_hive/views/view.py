@@ -902,18 +902,20 @@ def update_user_access(user_id):
 def user_job_notification(sender, recipient, file):
     send_email("the-hive Email Alert",
                ADMINS[0],
-               [recipient.email, sender.email],
-               render_template("notificationTemplate.html", recipient=recipient, file=file))
+               [recipient.email],
+               render_template("notificationTemplate.html", recipient=recipient, file=file),
+               sender.email)
 
 
 def user_add_account_notification(sender, recipient_email, recipient_firstname, password):
     send_email("the-hive New Account",
                ADMINS[0],
-               [recipient_email, sender.email],
+               [recipient_email],
                render_template("accountCreateTemplate.html",
                                recipient_firstname=recipient_firstname,
                                recipient_email=recipient_email,
-                               password=password))
+                               password=password),
+               sender.email)
 
 
 def page_not_found(e):

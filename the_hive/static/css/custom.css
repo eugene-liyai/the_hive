@@ -70,3 +70,65 @@
 .alert-style {
     margin-top: 20px;
 }
+
+ul.nav.navbar-nav.navbar-right {
+    display: none;
+}
+
+/* Media Queries */
+@media screen and (max-width: 766px) {
+
+    ul.nav.tabs {
+        display: none;
+    }
+
+    .nav-slider-container {
+        margin-top: 0;
+    }
+
+    #sidebar {
+        display: none;
+    }
+    ul.nav.tabs span {
+        display: none;
+    }
+
+    #tab1, #tab2, #tab3, #tab4 {
+        margin-left: 110px;
+    }
+
+    #tab1 h2, #tab2 h2, #tab3 h2, #tab4 h2 {
+        font-size: 24px;
+        line-height: 28px;
+        width: 200%;
+        margin-top: 20px;
+    }
+
+    #tab1 p, #tab2 p, #tab3 p, #tab4 p {
+        display: none;
+    }
+
+    div.panel.panel-default {
+        margin-left: -80px;
+    }
+
+    div.fixed-plugin {
+        display: none;
+    }
+
+    .custom-header {
+        margin-left: 5px;
+    }
+
+    .custom-header {
+        margin-left: 5px;
+    }
+
+    ul.nav.navbar-nav.navbar-right li {
+        margin-left: 10px;
+    }
+
+    ul.nav.navbar-nav.navbar-right {
+        display: table;
+    }
+}
