@@ -398,6 +398,35 @@ def update_user_password(user_id):
 
 
 @login_required
+def admin_reset_password(user_id):
+    """
+
+    The method updates existing user password to the application.
+
+    :return: returns success message if method executes successfully
+    """
+    if current_user.role == 'ROLE_ADMIN':
+        user = DATA_CONTROLLER.get_user_by_id(user_id)[0]
+        password = generate_random_password_string()
+
+        new_user = {
+            "password": password
+        }
+
+        try:
+            user_password_account_notification(current_user, user.email, user.first_name, password)
+            DATA_CONTROLLER.update_password(user_id, new_user)
+            flash("updated password for user {} {}".format(user.first_name, user.last_name))
+            return redirect(url_for('users'))
+        except Exception as ex:
+            print(ex)
+            flash("Error updating password for {} {}".format(user.first_name, user.last_name))
+            return redirect(url_for('users'))
+    else:
+        return abort(401)
+
+
+@login_required
 def add_job():
     """
 
@@ -904,7 +933,7 @@ def user_job_notification(sender, recipient, file):
                ADMINS[0],
                [recipient.email],
                render_template("notificationTemplate.html", recipient=recipient, file=file),
-               sender.email)
+               [sender.email])
 
 
 def user_add_account_notification(sender, recipient_email, recipient_firstname, password):
@@ -915,7 +944,17 @@ def user_add_account_notification(sender, recipient_email, recipient_firstname, 
                                recipient_firstname=recipient_firstname,
                                recipient_email=recipient_email,
                                password=password),
-               sender.email)
+               [sender.email])
+
+
+def user_password_account_notification(sender, recipient_email, recipient_firstname, password):
+    send_email("Password update notification",
+               ADMINS[0],
+               [recipient_email],
+               render_template("passwordUpdateNotificationTemplate.html",
+                               recipient_firstname=recipient_firstname,
+                               password=password),
+               [sender.email])
 
 
 def page_not_found(e):
