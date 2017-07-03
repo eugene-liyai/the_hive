@@ -365,6 +365,7 @@ class DatabaseController:
             job = jobs[0]
 
         if job:
+            job.job_id = new_job["job_id"]
             job.verbatim = new_job["verbatim"]
             job.timestamp = new_job["timestamp"]
             job.duration = new_job["duration"]
