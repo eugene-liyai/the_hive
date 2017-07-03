@@ -1,0 +1,309 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content%}
+
+<div class="row">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-info alert-style">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Alert!</strong> {{messages[0]}}.
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+{% if user.role == 'ROLE_ADMIN' %}
+<div class="row">
+    <div class="col-sm-3 add_job_div">
+        <div class="dataTables_length">
+            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-user-plus" aria-hidden="true"></i> Add User</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+<table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+  <thead class="thead-inverse">
+    <tr>
+        <th><i class="fa fa-hashtag"></i> User ID</th>
+        <th><i class="fa fa-calendar"></i> Date Added</th>
+        <th><i class="fa fa-angle-right"></i> First Name</th>
+        <th><i class="fa fa-angle-right"></i> Last Name</th>
+        <th><i class="fa fa-envelope"></i> Email</th>
+        <th><i class="fa fa-mouse-pointer"></i> Action</th>
+    </tr>
+  </thead>
+      <tbody>
+      {% for user in users %}
+        <tr>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.user_id}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.date_added}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.first_name}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.last_name}}</td>
+          <td data-toggle="modal" data-target="#user_{{user.user_id}}">{{user.email}}</td>
+          <td>
+              <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{user.user_id}}"><i class="fa fa-edit"></i></a>
+              <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete_{{user.user_id}}"><i class="fa fa-trash-o"></i></a>
+          </td>
+        </tr>
+
+      <!-- Modal view user -->
+      <div class="modal fade" id=user_{{user.user_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-user"></i> User {{user.first_name}} {{user.last_name}}</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="job-container">
+                      <h4><i class="fa fa-user"></i> {{user.first_name}} {{user.last_name}} </h4>
+                      <h6><i class="fa fa-info"></i> user jobs: {{user.job_details|length}} </h6>
+                      <p class="description">{{user.email}}</p>
+                      <p><i class="fa fa-history"></i> Role <span class="label label-primary">
+                          {% if user.role == 'ROLE_AGENT' %}
+                            Agent
+                          {% else %}
+                            Admin
+                          {% endif %}
+                      </span></p>
+                      <p><i class="fa fa-calendar"></i> Date Joined <span>{{user.date_added}}</span></p>
+                      <p>
+                          {% if user.availability %}
+                          <i class="fa fa-check"></i> Available for work <span class="label label-success">{{user.availability}}</span>
+                          {% else %}
+                          <i class="fa fa-times"></i> Available for work <span class="label label-warning">{{user.availability}}</span>
+                          {% endif %}
+                      </p>
+                      <p><i class="fa fa-calendar-check-o"></i> Last availability update
+                          {% if user.availability_update %}
+                            <span>{{user.availability_update }}</span>
+                          {% else %}
+                            <span>Never updated availability</span>
+                          {% endif %}
+                      </p>
+                      <p><i class="fa fa-calendar"></i> Reset password <span style="margin-top: -5px;"><a data-toggle="modal" data-target="#reset_{{user.user_id}}" class="btn btn-danger btn-xs">Reset</a></span></p>
+                      <div class="form-group">
+                            <label class="col-sm-3 col-md-3 control-label toggle-label" style="padding-left: 20px;">
+                                <i class="fa fa-user-times"></i> Block User?
+                            </label>
+                            <div class="col-sm-9 col-md-9 text-right">
+                                <div class="input-group" style="float: right">
+                                    <div id="progress_toggle" class="btn-group">
+                                        {% if user.role != 'ROLE_ADMIN'%}
+                                            {% if user.account_access %}
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-danger btn-sm active" data-toggle="progress{{user.user_id}}" data-title="false">No</a>
+                                            {% else %}
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-success btn-sm active" data-toggle="progress{{user.user_id}}" data-title="true">Yes</a>
+                                            <a href="{{ url_for('update_user_access', user_id=user.user_id)}}"
+                                               class="btn btn-danger btn-sm notActive" data-toggle="progress{{user.user_id}}" data-title="False">No</a>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="label label-info"><i class="fa fa-remove"></i> Cannot block admin</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+      </div>
+
+      <!-- Modal edit User -->
+      <div class="modal fade" id=edit_{{user.user_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit User ID {{user.user_id}}</h4>
+              </div>
+              <div class="modal-body">
+                  <form class="form-horizontal" action="/admin/update_users/{{user.user_id}}" method="POST">
+
+                        <div class="form-group">
+                            <label class="control-label" for="edit_user_id">User ID</label>
+                            <input class="form-control input-sm" id="edit_user_id" type="text" value="{{user.user_id}}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_first_name">First Name</label>
+                            <input class="form-control input-sm" id="edit_first_name" type="text" value="{{user.first_name}}"
+                                   autocomplete="off" required name="edit_first_name">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_last_name">Last Name</label>
+                            <input class="form-control input-sm" id="edit_last_name" type="text" value="{{user.last_name}}"
+                                    autocomplete="off" required name="edit_last_name">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_email">Email</label>
+                            <input class="form-control input-sm" id="edit_email" type="text" value="{{user.email}}" autocomplete="off"
+                                    required name="edit_email">
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-2 control-label" for="edit_role" style="padding: 0; margin-top: 9px">Role</label>
+                            <div class="col-lg-10">
+                                <select class="form-control input-sm" id="edit_role" name="edit_role">
+                                    {% if user.role == 'ROLE_AGENT' %}
+                                        <option value="agent" selected>Agent Account</option>
+                                        <option value="admin">Admin Account</option>
+                                    {% else %}
+                                        <option value="admin" selected>Admin Account</option>
+                                        <option value="agent" >Agent Account</option>
+                                    {% endif%}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 70px;">
+                            <hr>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+              </div>
+            </div>
+
+          </div>
+      </div>
+
+      <!-- Modal delete user-->
+      <div class="modal fade" id=delete_{{user.user_id}} role="dialog">
+          <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Delete User with ID {{user.user_id}}</h4>
+                  </div>
+                  <div class="modal-body">
+                      <p><strong><i class="fa fa-info"></i> Are you sure you want to delete {{user.first_name}} {{user.last_name}}?</strong></p>
+                      <div class="row text-center">
+                          <div class="col-md-6">
+                              <a href="{{ url_for('delete_user', user_id=user.user_id)}}" class="btn btn-primary btn-sm btn-block" >Yes</a>
+                          </div>
+                          <div class="col-md-6">
+                              <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Modal delete user-->
+      <div class="modal fade" id=reset_{{user.user_id}} role="dialog">
+          <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reset password for User with ID {{user.user_id}}</h4>
+                  </div>
+                  <div class="modal-body">
+                      <p><strong><i class="fa fa-info"></i> Are you sure you want to reset {{user.first_name}} {{user.last_name}}'s password?</strong></p>
+                      <div class="row text-center">
+                          <div class="col-md-6">
+                              <a href="{{ url_for('admin_reset_password', user_id=user.user_id)}}" class="btn btn-primary btn-sm btn-block" >Yes</a>
+                          </div>
+                          <div class="col-md-6">
+                              <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+      </tbody>
+</table>
+
+<!-- Modal add user-->
+  <div class="modal fade" id="add_job" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-user-plus" aria-hidden="true"></i> Add User</h4>
+        </div>
+          <form class="form-horizontal" action="/admin/add_user" method="post">
+              <fieldset>
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label class="col-lg-3 control-label" for="first_name">First Name</label>
+                        <div class="col-lg-9">
+                            <input class="form-control input-sm" type="text" name="first_name" id="first_name" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-3 control-label" for="last_name">Last Name</label>
+                        <div class="col-lg-9">
+                            <input class="form-control input-sm" type="text" name="last_name" id="last_name" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="email" class="col-lg-3 control-label">Email</label>
+                      <div class="col-lg-9">
+                        <input class="form-control input-sm" name="email" id="email" autocomplete="off" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-3 control-label" for="role">Role</label>
+                        <div class="col-lg-9">
+                            <select class="form-control input-sm" id="role" name="role">
+                                <option value="agent" >Agent Account</option>
+                                <option value="admin" >Admin Account</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </fieldset>
+          </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/tables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/table-toggle.js') }}"></script>
+{% endblock %}

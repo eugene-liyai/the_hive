@@ -1,0 +1,169 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-dismissible alert-info alert-style">
+                  <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  <strong>Alert!</strong> {{messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="{{ url_for('static', filename='images/the-hive-logo.png') }}" alt="the-hive logo" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h3>
+                            {{user.first_name}} {{user.last_name}}
+                        </h3>
+                        <cite title="San Francisco, USA"> <i class="fa fa-cogs"></i> <strong>Account - </strong>
+                            {% if user.role == 'ROLE_AGENT' %}
+                            Agent
+                            {% else %}
+                            Admin
+                            {% endif %}
+                            </cite>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            <i class="fa fa-envelope"></i> <strong>Email</strong> - {{user.email}}
+                            <br />
+                            <i class="fa fa-hashtag"></i> <strong>User ID</strong> - {{user.user_id}}
+                            <br />
+                            <i class="fa fa-calendar"></i> <strong>Date Added</strong> - {{user.date_added}}</p>
+                        <!-- Split button -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" data-toggle="dropdown">
+                                Account actions</button>
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span><span class="sr-only">Actions</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" data-toggle="modal" data-target="#edit_password_info">Change Password</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#edit_user_info" >Edit account</a></li>
+                                <li><a href="{{url_for('stats')}}">Account Stats</a></li>
+                                <li class="divider"></li>
+                                <li><a href="{{ url_for('availability') }}">Set Availability</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal edit account info-->
+    <div class="modal fade" id="edit_user_info" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title"><i class="fa fa-info"></i> Edit User Info</h4>
+            </div>
+              <form class="form-horizontal" action="/update_user/{{user.user_id}}" method="post">
+                  <fieldset>
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_first_name">First Name</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_first_name" id="edit_first_name"
+                                    autocomplete="off" required value="{{user.first_name}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_last_name">Last Name</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_last_name" id="edit_last_name"
+                                    autocomplete="off" required value="{{user.last_name}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-3 control-label" for="edit_email">Email</label>
+                            <div class="col-lg-9">
+                                <input class="form-control input-sm" type="text" name="edit_email" id="edit_email"
+                                    autocomplete="off" required value="{{user.email}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">
+                          <i class="fa fa-send"></i>
+                           Submit
+                      </button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">
+                          <i class="fa fa-close"></i>
+                           Close
+                      </button>
+                    </div>
+                  </fieldset>
+              </form>
+          </div>
+
+        </div>
+      </div>
+
+        <div class="modal fade" id="edit_password_info" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal update password-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title"><i class="fa fa-lock"></i> Change Password</h4>
+            </div>
+              <form class="form-horizontal" action="/update_password/{{user.user_id}}" method="post">
+                  <fieldset>
+                    <div class="modal-body">
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="current_password">Current Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="password" name="current_password" id="current_password"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="new_password">New Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="password" name="new_password" id="new_password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-lg-4 control-label" for="confirm_new_password">Confirm New Password</label>
+                            <div class="col-lg-8">
+                                <input class="form-control input-sm" type="password" name="confirm_new_password" id="confirm_new_password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">
+                          <i class="fa fa-send"></i>
+                           Submit
+                      </button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">
+                          <i class="fa fa-close"></i>
+                           Close
+                      </button>
+                    </div>
+                  </fieldset>
+              </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+{% endblock %}

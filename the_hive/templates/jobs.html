@@ -1,0 +1,254 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content%}
+
+
+<div class="row">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-info alert-style">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Alert!</strong> {{messages[0]}}.
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+{% if user.role == 'ROLE_ADMIN' %}
+<div class="row">
+    <div class="col-sm-3 add_job_div">
+        <div class="dataTables_length">
+            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+<table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+  <thead class="thead-inverse">
+    <tr>
+        <th><i class="fa fa-hashtag"></i> Job ID</th>
+        <th><i class="fa fa-calendar"></i> Date Added</th>
+        <th><i class="fa fa-list"></i> Description</th>
+        <th><i class="fa fa-clock-o"></i> Duration</th>
+        <th><i class="fa fa-money"></i> Paid</th>
+        <th><i class="fa fa-mouse-pointer"></i> Action</th>
+    </tr>
+  </thead>
+      <tbody>
+      {% for job in jobs %}
+        <tr>
+          <td>{{job.job_id}}</td>
+          <td>{{job.date_created}}</td>
+          <td>{{job.description}}</td>
+          <td>{{job.duration}}</td>
+          <td>
+              {% if job.paid == False %}
+                <i class="fa fa-times-circle-o text-warning"></i>
+              {% else %}
+                <i class="fa fa-check-circle-o text-success"></i>
+              {% endif %}
+          </td>
+          <td>
+              <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{job.job_id}}"><i class="fa fa-edit"></i></a>
+              <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete_{{job.job_id}}"><i class="fa fa-trash-o"></i></a>
+          </td>
+        </tr>
+
+      <!-- Modal edit job -->
+      <div class="modal fade" id=edit_{{job.job_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Job Item ID {{job.job_id}}</h4>
+                  <h4>
+                        {% if job.competed %}
+                        <span class="label label-success"><i class="fa fa-calendar-check-o"></i> Completed - ({{job.date_completed}})</span>
+                        {% else %}
+                        <span class="label label-warning"><i class="fa fa-calendar-times-o"></i> In Progess</span>
+                        {% endif %}
+                  </h4>
+              </div>
+              <div class="modal-body">
+                  <form class="form-horizontal" action="/admin/update_job/{{job.job_id}}" method="POST">
+
+                        <div class="form-group">
+                            <label class="control-label" for="edit_job_id">Job ID</label>
+                            <input class="form-control input-sm" id="edit_job_id" type="text" value="{{job.job_id}}"
+                                   name="edit_job_id" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_duration">Duration</label>
+                            <input class="form-control input-sm" id="edit_duration" type="text" value="{{job.duration}}"
+                                name="edit_duration" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_description">Description</label>
+                            <input class="form-control input-sm" id="edit_description" type="text" value="{{job.description}}"
+                                name="edit_description" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_description">Download link</label>
+                            <input class="form-control input-sm" id="edit_link" type="text" value="{{job.link}}"
+                                name="edit_link" autocomplete="false">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_verbatim" class="btn btn-primary btn-sm">
+                                Verbatim
+                                {% if job.verbatim %}
+                                <input type="checkbox" id="edit_verbatim" class="badgebox" checked name="edit_verbatim">
+                                {% else %}
+                                <input type="checkbox" id="edit_verbatim" class="badgebox" name="edit_verbatim">
+                                {% endif%}
+                                <span class="badge"><i class="fa fa-check"></i></span>
+                            </label>
+                            <label for="edit_timestamp" class="btn btn-primary btn-sm pull-right">
+                                Timestamp
+                                {% if job.timestamp %}
+                                <input type="checkbox" id="edit_timestamp" class="badgebox" checked name="edit_timestamp">
+                                {% else %}
+                                <input type="checkbox" id="edit_timestamp" class="badgebox" name="edit_timestamp">
+                                {% endif%}
+                                <span class="badge"><i class="fa fa-check"></i></span>
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin-top: 40px;">
+                            <hr>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+              </div>
+            </div>
+
+          </div>
+      </div>
+
+      <!-- Modal delete job-->
+      <div class="modal fade" id=delete_{{job.job_id}} role="dialog">
+          <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Delete Job Item ID {{job.job_id}}</h4>
+                  </div>
+                  <div class="modal-body">
+                      <p><strong><i class="fa fa-info"></i> Are you sure you want to delete this job item?</strong></p>
+                      <div class="row text-center">
+                          <div class="col-md-6">
+                                  <a class="btn btn-primary btn-sm btn-block"
+                                        href="{{ url_for('delete_job', job_id=job.job_id)}}">Yes</a>
+                          </div>
+                          <div class="col-md-6">
+                              <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+      </tbody>
+</table>
+
+<!-- Modal add job-->
+  <div class="modal fade" id="add_job" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</h4>
+        </div>
+          <form class="form-horizontal" accept-charset="UTF-8" action="/admin/add_job" method="POST">
+              <fieldset>
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label class="col-lg-2 control-label" for="job_id">Job ID</label>
+                        <div class="col-lg-10">
+                            <input class="form-control input-sm" type="text" name="job_id" id="job_id" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-2 control-label" for="job_name">Job Name</label>
+                        <div class="col-lg-10">
+                            <input class="form-control input-sm" type="text" name="job_name" id="job_name" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-2 control-label" for="duration">Duration</label>
+                        <div class="col-lg-10">
+                            <input class="form-control input-sm" type="text" name="duration" id="duration" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="description" class="col-lg-2 control-label">Description</label>
+                      <div class="col-lg-10">
+                        <textarea class="form-control" rows="3" name="description" id="description" autocomplete="off"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                            <label class=" control-label col-lg-2" for="edit_description">Download link</label>
+                            <div class="col-lg-10">
+                            <input class="form-control input-sm" id="link" type="text"
+                                   name="link" autocomplete="off">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-2 control-label" >Verbatim</label>
+                        <div class="col-lg-10">
+                             <label for="verbatim" class="btn btn-primary btn-sm">
+                                Verbatim <input type="checkbox" id="verbatim" class="badgebox" name="verbatim">
+                                <span class="badge"><i class="fa fa-check"></i></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-2 control-label">Timestamp</label>
+                        <div class="col-lg-10">
+                            <label for="timestamp" class="btn btn-primary btn-sm">
+                                Timestamp <input type="checkbox" id="timestamp" class="badgebox" name="timestamp">
+                                <span class="badge"><i class="fa fa-check"></i></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <input type="submit" class="btn btn-primary" />
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </fieldset>
+          </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/tables.js') }}"></script>
+{% endblock %}

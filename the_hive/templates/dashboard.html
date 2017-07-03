@@ -12,6 +12,7 @@
 
 
 {% block content %}
+
     <!-- Overlay for fixed sidebar -->
 <div class="container">
     <div class="sidebar-overlay"></div>
@@ -42,53 +43,54 @@
             <li class="dropdown">
                 <ul id="settings-dropdown" class="dropdown-menu">
                     <li>
-                        <a href="#" tabindex="-1">
+                        <a href="{{ url_for('profile') }}" tabindex="-1">
                             <i class="fa fa-user"></i> Profile
                         </a>
                     </li>
                     <li>
-                        <a href="#" tabindex="-1">
+                        <a href="{{ url_for('availability') }}" tabindex="-1">
                             <i class="fa fa-hourglass-start"></i> Set Availability
                         </a>
                     </li>
                     <li>
-                        <a href="#" tabindex="-1">
+                        <a href="{{ url_for('help_page') }}" tabindex="-1">
                            <i class="fa fa-question"></i> Help
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" tabindex="-1">
-                           <i class="fa fa-sign-out"></i> Logout
                         </a>
                     </li>
                 </ul>
             </li>
+            {% if user.role == 'ROLE_ADMIN'%}
             <li>
-                <a href="#">
+                <a href="{{ url_for('job_items') }}">
                     <i class="sidebar-icon md-inbox"></i>
                     Jobs Items
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ url_for('jobs') }}">
                     <i class="sidebar-icon md-inbox"></i>
                     Jobs
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ url_for('users') }}">
                     <i class="sidebar-icon md-star"></i>
                     List Users
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ url_for('rate') }}">
                     <i class="sidebar-icon md-send"></i>
                     Rates
                 </a>
             </li>
+            {% endif %}
             <li class="divider"></li>
-
+            <li>
+                <a href="{{ url_for('logout') }}" tabindex="-1">
+                   <i class="fa fa-sign-out"></i> Logout
+                </a>
+            </li>
         </ul>
     </aside>
 
@@ -144,7 +146,7 @@
     <!-- End settings toggle button -->
 
     <div class="col-md-9">
-        {%block userjobs%}
+        {%block dashboard_content%}
         {%endblock%}
     </div>
     </div>

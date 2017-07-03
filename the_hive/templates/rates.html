@@ -1,0 +1,121 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content%}
+
+<div class="row">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-info alert-style">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Alert!</strong> {{messages[0]}}.
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="row">
+    <table id="rates_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+        <thead class="thead-inverse">
+            <tr>
+                <th><i class="fa fa-hashtag"></i> Rate ID</th>
+                <th><i class="fa fa-superscript"></i> Rate</th>
+                <th><i class="fa fa-list"></i> Description</th>
+                <th><i class="fa fa-mouse-pointer"></i> Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if rates %}
+                {% for rate in rates %}
+                    <tr>
+                        <td>{{rate.rate_id}}</td>
+                        <td>{{rate.rate}}</td>
+                        <td>{{rate.description}}</td>
+                        <td>
+                          <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{rate.rate_id}}"><i class="fa fa-edit"></i></a>
+                          <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete_{{rate.rate_id}}"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>
+
+                    <!-- Modal edit Rate -->
+                      <div class="modal fade" id=edit_{{rate.rate_id}} role="dialog">
+                          <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Rate ID {{rate.rate_id}}</h4>
+                              </div>
+                              <div class="modal-body">
+                                  <form class="form-horizontal" action="/admin/update_rate/{{rate.rate_id}}" method="POST">
+                                        <div class="form-group">
+                                            <label class="control-label" for="edit_rate_id">Job ID</label>
+                                            <input class="form-control input-sm" id="edit_rate_id" type="text" value="{{rate.rate_id}}" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="edit_rate">Rate</label>
+                                            <input class="form-control input-sm" id="edit_rate" type="text" value="{{rate.rate}}" autocomplete="off"
+                                                required name="edit_rate">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class=" control-label" for="edit_description">Description</label>
+                                            <input class="form-control input-sm" id="edit_description" type="text" value="{{rate.description}}"
+                                                autocomplete="off" required name="edit_description">
+                                        </div>
+                                        <div class="form-group" style="margin-top: 70px;">
+                                            <hr>
+                                            <button type="submit" class="btn btn-primary" >Submit</button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+
+                                    </form>
+                              </div>
+                            </div>
+
+                          </div>
+                      </div>
+
+                      <!-- Modal delete rate-->
+                      <div class="modal fade" id=delete_{{rate.rate_id}} role="dialog">
+                          <div class="modal-dialog">
+
+                              <!-- Modal content-->
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Delete Rate ID {{rate.rate_id}}</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                      <p><strong><i class="fa fa-info"></i> Are you sure you want to delete this rate?</strong></p>
+                                      <div class="row text-center">
+                                          <div class="col-md-6">
+                                              <a class="btn btn-primary btn-sm btn-block" data-dismiss="modal" disabled="">Yes</a>
+                                          </div>
+                                          <div class="col-md-6">
+                                              <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan=3 class="text-center"><h3>Data rates not found</h3></td>
+                </tr>
+            {% endif %}
+          </tbody>
+    </table>
+</div>
+
+{% endblock %}

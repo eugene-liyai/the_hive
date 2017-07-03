@@ -11,7 +11,7 @@ Desc      : Model class that creates users and connects to database
 from datetime import datetime
 
 from flask_login import UserMixin
-from sqlalchemy import Column, String, Integer, Date
+from sqlalchemy import Column, String, Integer, Date, Boolean
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
 
@@ -28,6 +28,9 @@ class Users(Model, UserMixin):
     date_added = Column(Date, default=datetime.utcnow)
     date_modified = Column(Date, default=datetime.utcnow)
     role = Column(String(20), nullable=False)
+    availability = Column(Boolean, default=True, nullable=False)
+    account_access = Column(Boolean, default=True, nullable=False)
+    availability_date_update = Column(Date)
     user_detail = relationship("JobsDetails", backref="Users")
 
     def get_id(self):
@@ -54,8 +57,11 @@ class Users(Model, UserMixin):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
-            "date_added": self.date.isoformat() if self.date_added else "",
-            "date_modified": self.date.isoformat() if self.date_modified else "",
+            "date_added": self.date_added.isoformat() if self.date_added else "",
+            "date_modified": self.date_modified.isoformat() if self.date_modified else "",
             "role": self.role,
+            "availability": self.availability,
+            "availability_update": self.availability_date_update,
+            "account_access": self.account_access,
             "job_details": [job.serialize() for job in self.user_detail]
         }
