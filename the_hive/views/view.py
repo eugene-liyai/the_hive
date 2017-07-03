@@ -955,15 +955,3 @@ def user_password_account_notification(sender, recipient_email, recipient_firstn
                                recipient_firstname=recipient_firstname,
                                password=password),
                [sender.email])
-
-
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-
-def server_error(e):
-    return render_template('500.html'), 500
-
-
-def forbiden(e):
-    return render_template('403.html'), 403

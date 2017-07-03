@@ -7,9 +7,10 @@ Desc      : Routing url endpoints
 # ============================================================================
 # necessary imports
 # ============================================================================
+from flask import render_template
 
 from the_hive.views.view import login, add_user, get_user_jobs, update_users, update_user_password, delete_user, users
-from the_hive.views.view import page_not_found, update_user_access, delete_job_item, index, logout, stats, job_items, update_job_item
+from the_hive.views.view import update_user_access, delete_job_item, index, logout, stats, job_items, update_job_item
 from the_hive.views.view import delete_job, update_job, add_job, jobs, profile, availability, add_job_item
 from the_hive.views.view import rate, update_rate, help_page, update_availability, admin_reset_password
 
@@ -50,6 +51,15 @@ def initialize_api_routes(app):
         app.add_url_rule('/admin/jobs', 'jobs', jobs, methods=['GET'])
         app.add_url_rule('/admin/job_items', 'job_items', job_items, methods=['GET', 'POST'])
         app.add_url_rule('/user_jobs', 'user_jobs', get_user_jobs, methods=['GET'])
-        # app.error_handler_spec[None][404] = page_not_found
-        # app.error_handler_spec[None][500] = server_error
-        # app.error_handler_spec[None][403] = forbiden
+
+        @app.errorhandler(404)
+        def page_not_found(e):
+            return render_template('404.html'), 404
+
+        @app.errorhandler(500)
+        def server_error(e):
+            return render_template('500.html'), 500
+
+        @app.errorhandler(403)
+        def server_error(e):
+            return render_template('403.html'), 403
