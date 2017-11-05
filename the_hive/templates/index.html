@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+{% endblock %}
+
+{% block title %}
+    the-hive -- Welcome
+{% endblock %}
+
+{% block content %}
+<div class="row">
+<div id="tabs-home" class="row slider cover-image">
+    <div class="col-sm-3 nav-slider-container nav-menu">
+        <nav class="nav-sidebar">
+            <ul class="nav tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab"><p class="nav-tab-header"><i class="fa fa-sign-in" aria-hidden="true"></i> The Hive Login</p><span>Enter credentials provided by system admin</span></a></li>
+                <li class=""><a href="#tab2" data-toggle="tab"><p class="nav-tab-header"><i class="fa fa-file-o" aria-hidden="true"></i> Track your work</p><span>Provides an easy and efficient way to track your output</span></a></li>
+                <li class=""><a href="#tab3" data-toggle="tab"><p class="nav-tab-header"><i class="fa fa-mobile" aria-hidden="true"></i> Ease of use</p><span>Accessible using all devices.</span></a></li>
+                <li class=""><a href="#tab4" data-toggle="tab"><p class="nav-tab-header"><i class="fa fa-folder-open-o" aria-hidden="true"></i> Reliable records</p><span>Revised constantly</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- tab content -->
+    <div id="wea" class="col-sm-7 tab-content nav-slider-container">
+
+        <div class="tab-pane active text-style fade in active" id="tab1">
+            <h2><i class="fa fa-lock" aria-hidden="true"></i> Hive login panel</h2>
+            <p>This application is free to use</p>
+            <p><strong>$0.00 24 hrs.</strong></p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Enter credentials:</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="/forms/login" accept-charset="UTF-8" method="post">
+                        <div class="row form-group">
+                            <div class="col-md-2">
+                                <img src="http://legalprom.cl/wp-content/uploads/2014/05/eirl70.jpg"data-toggle="tooltip" data-original-title="Sociedad EIRL">
+                                <input type="checkbox" name="doc_type[cod][]" class="hidden" value="society_eirl">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="email" id="email" class="form-control input-sm" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password">
+                        </div>
+                        <input type="submit" name="commit" value="Sign in" class="btn btn-primary btn-block">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane text-style fade" id="tab2">
+            <h2><i class="fa fa-file" aria-hidden="true"></i> Well organised and ease of tracking</h2>
+            <p>The hive enables keeps up to date records of jobs assigned to your account.
+                This enables future referencing and accountability</p>
+            <p><strong>Users should check records authenticate the data.</strong></p>
+        </div>
+
+        <div class="tab-pane text-style fade" id="tab3">
+            <h2><i class="fa fa-mobile" aria-hidden="true"></i> Accessible across platform</h2>
+            <p>The hive has been optimised to operate on different operating systems and browsers.
+                This ensures effective and efficient operations<LegalPro></LegalPro></p>
+            <p><strong>Maintanance is carried out once a month.</strong> The date will be communicated prior.</p>
+        </div>
+
+        <div class="tab-pane text-style fade" id="tab4">
+            <h2><i class="fa fa-folder-open" aria-hidden="true"></i> Retrieve records easily</h2>
+            <p>The hive enables access to user records from any past date.</p>
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}
