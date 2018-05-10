@@ -10,8 +10,8 @@ class Config(object):
     MAIL_PORT = 465
     MAIL_USE_TLS = False
     MAIL_USE_SSL = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
 
 class DevelopmentConfig(Config):
@@ -22,8 +22,8 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = os.environ['THE_HIVE_SQLALCHEMY_DATABASE_URI']
-    SECRET_KEY = os.environ['SECRET_KEY']
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY_DATABASE_URI')
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 class ProductionConfig(Config):
@@ -32,8 +32,8 @@ class ProductionConfig(Config):
     """
 
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ['THE_HIVE_SQLALCHEMY_DATABASE_URI']
-    SECRET_KEY = os.environ['SECRET_KEY']
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY_DATABASE_URI')
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 class TestingConfig(Config):
@@ -45,8 +45,8 @@ class TestingConfig(Config):
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ['THE_HIVE_TEST_SQLALCHEMY_DATABASE_URI']
-    SECRET_KEY = os.environ['SECRET_KEY']
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_TEST_SQLALCHEMY_DATABASE_URI')
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 app_config = {
