@@ -8,12 +8,15 @@ Desc      : Acts as a service file for database population and db engine to be u
 # ============================================================================
 # necessary imports
 # ============================================================================
-from sqlalchemy import create_engine
+from datetime import datetime
+
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 
 from the_hive.models.users import Users
 from the_hive.models.jobs import Jobs
 from the_hive.models.rate import Rate
+from the_hive.models.job_details import JobsDetails
 from the_hive.models.initialize_db import init_bucketlist_database, drop_bucketlist_database
 
 
@@ -86,6 +89,21 @@ class DatabaseController:
         else:
             return single_user
 
+    def get_available_users(self, serialize=False):
+        """
+        The function returns users who's availability is true
+
+        :param : None
+        :return: Users available for work
+        """
+        available_users = []
+        available_users = self.session.query(Users).filter_by(availability=True).all()
+
+        if serialize:
+            return [user.serialize() for user in available_users]
+        else:
+            return available_users
+
     def get_user_by_id(self, user_id=None, serialize=False):
         """
         If the user_id parameter is  provided, the application looks up the user with the provided id,
@@ -132,10 +150,17 @@ class DatabaseController:
             user = users[0]
 
         if user:
-            user.email = new_user["email"]
-            user.phone = new_user["role"]
-            user.first_name = new_user["first_name"]
-            user.last_name = new_user["last_name"]
+            if len(new_user) == 5:
+                user.email = new_user["email"]
+                user.first_name = new_user["first_name"]
+                user.last_name = new_user["last_name"]
+                user.date_modified = new_user["date_modified"]
+                user.role = new_user["role"]
+            else:
+                user.email = new_user["email"]
+                user.first_name = new_user["first_name"]
+                user.last_name = new_user["last_name"]
+                user.date_modified = new_user["date_modified"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -164,7 +189,7 @@ class DatabaseController:
             user = users[0]
 
         if user:
-            user.email = new_user["password"]
+            user.password = new_user["password"]
             self.session.add(user)
             self.session.commit()
             updated_user = self.get_user_by_id(user_id)[0]
@@ -197,8 +222,8 @@ class DatabaseController:
                    verbatim=None,
                    timestamp=None,
                    duration=None,
-                   description=None,
-                   user=None):
+                   link=None,
+                   description=None):
         """
 
         The method creates and saves a new job to the database.
@@ -209,7 +234,7 @@ class DatabaseController:
         :param timestamp: set to true if timestamp is required
         :param duration: duration of job
         :param description: description of job
-        :param user: user associated with the job
+        :param link: job download link
         :return: The id of the new job
         """
 
@@ -218,12 +243,41 @@ class DatabaseController:
                            verbatim=verbatim,
                            timestamp=timestamp,
                            duration=duration,
-                           description=description,
-                           user=user)
+                           download_link=link,
+                           description=description)
         self.session.add(created_job)
         self.session.commit()
 
         return created_job.job_id
+
+    def create_job_item(self,
+                        job_name=None,
+                        user_assign=None,
+                        duration=None,
+                        link=None,
+                        description=None):
+        """
+
+        The method creates and saves a new job to the database.
+
+        :param job_name: the parent job id
+        :param duration: duration of job
+        :param description: description of job
+        :param link: job download link
+        :param user_assign: user associated with the job
+        :return: The id of the new job item
+        """
+
+        created_job_item = JobsDetails(duration=duration,
+                                       job=job_name,
+                                       description=description,
+                                       download_link=link,
+                                       user=user_assign)
+
+        self.session.add(created_job_item)
+        self.session.commit()
+
+        return created_job_item.job_details_id
 
     def update_rate(self, rate_id, new_rate):
         """
@@ -284,6 +338,8 @@ class DatabaseController:
 
         if rate_id:
             all_rates = self.session.query(Rate).filter(Rate.rate_id == rate_id).all()
+        elif rate_id is None:
+            all_rates = self.session.query(Rate).order_by(Rate.rate_id).all()
 
         if serialize:
             return [rate.serialize() for rate in all_rates]
@@ -300,9 +356,6 @@ class DatabaseController:
         :return: The job with the matching id.
         """
 
-        if int(job_id) < 0:
-            raise ValueError('Parameter [job_id] should be positive!')
-
         updated_job = None
         jobs = self.get_job_by_id(job_id)
         job = None
@@ -312,17 +365,46 @@ class DatabaseController:
             job = jobs[0]
 
         if job:
-            job.job_name = new_job["job_name"]
-            job.date_completed = new_job["date_completed"]
-            job.competed = new_job["competed"]
+            job.job_id = new_job["job_id"]
             job.verbatim = new_job["verbatim"]
             job.timestamp = new_job["timestamp"]
             job.duration = new_job["duration"]
             job.description = new_job["description"]
-            job.user = new_job["user"]
+            job.download_link = new_job["link"]
             self.session.add(job)
             self.session.commit()
             updated_job = self.get_job_by_id(job_id)[0]
+
+        return updated_job.serialize()
+
+    def update_job_item(self, job_item_id, new_job):
+        """
+        The application looks up the job item with the provided job_item_id
+        in order to update the job's details
+
+        :param job_item_id: The id of the job item intended to be updated
+        :param new_job: job object that holds updated details
+        :return: The job with the matching id.
+        """
+
+        updated_job = None
+        jobs = self.get_item_by_id(job_item_id)
+        job = None
+        if len(jobs) is not 1:
+            return updated_job
+        else:
+            job = jobs[0]
+
+        if job:
+            job.date_completed = new_job["date_completed"]
+            job.competed = new_job["competed"]
+            job.duration = new_job["duration"]
+            job.description = new_job["description"]
+            job.user = new_job["user"]
+            job.paid = new_job["paid"]
+            self.session.add(job)
+            self.session.commit()
+            updated_job = self.get_item_by_id(job_item_id)[0]
 
         return updated_job.serialize()
 
@@ -338,12 +420,49 @@ class DatabaseController:
         all_jobs = []
 
         if job_id is None:
-            all_jobs = self.session.query(Jobs).order_by(Jobs.job_id).all()
+            all_jobs = self.session.query(Jobs).order_by(desc(Jobs.date_created)).all()
         else:
-            if int(job_id) < 0:
+            all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
+
+        if serialize:
+            return [job.serialize() for job in all_jobs]
+        else:
+            return all_jobs
+
+    def get_job_not_completed(self, serialize=False):
+        """
+        Returns all jobs that are still in progress
+
+        :param : None
+        :return: jobs not completed.
+        """
+
+        all_jobs = []
+        all_jobs = self.session.query(Jobs).filter(Jobs.competed == False).all()
+
+        if serialize:
+            return [job.serialize() for job in all_jobs]
+        else:
+            return all_jobs
+
+    def get_item_by_id(self, item_id=None, serialize=False):
+        """
+        If the item_id parameter is  provided, the application looks up the job with the provided id,
+        else it returns all the jobs
+
+        :param item_id: The id of the item intended to be searched(default value is None)
+        :return: The job with the matching id or all jobs.
+        """
+
+        all_jobs = []
+
+        if item_id is None:
+            all_jobs = self.session.query(JobsDetails).order_by(desc(JobsDetails.date_created)).all()
+        else:
+            if int(item_id) < 0:
                 return all_jobs
             else:
-                all_jobs = self.session.query(Jobs).filter(Jobs.job_id == job_id).all()
+                all_jobs = self.session.query(JobsDetails).filter(JobsDetails.job_details_id == item_id).all()
 
         if serialize:
             return [job.serialize() for job in all_jobs]
@@ -363,7 +482,7 @@ class DatabaseController:
         all_jobs = []
 
         if job_id is None:
-            all_jobs = self.session.query(Jobs).filter(Jobs.user == user).order_by(Jobs.job_id).all()
+            all_jobs = self.session.query(Jobs).filter(Jobs.user == user).order_by(desc(Jobs.date_created)).all()
         else:
             if int(job_id) < 0:
                 return all_jobs
@@ -385,12 +504,27 @@ class DatabaseController:
         :return: True if job object was deleted, else False.
         """
 
-        if int(job_id) < 0:
-            raise ValueError('Parameter [job_id] should be positive!')
-
         if job_id:
             try:
                 job_list = self.session.query(Jobs).filter(Jobs.job_id == job_id).first()
+                self.session.delete(job_list)
+                self.session.commit()
+                return True
+            except Exception as ex:
+                return False
+
+    def delete_job_item(self, job_item_id):
+        """
+        The application looks up the job item with the provided id
+        in order to delete the job object from the database
+
+        :param job_item_id: The id of the job item intended to be deleted
+        :return: True if job object was deleted, else False.
+        """
+
+        if job_item_id:
+            try:
+                job_list = self.session.query(JobsDetails).filter(JobsDetails.job_details_id == job_item_id).first()
                 self.session.delete(job_list)
                 self.session.commit()
                 return True
@@ -407,12 +541,82 @@ class DatabaseController:
         """
         if email and password:
             user = self.get_user_by_email(email=email)
-            if user and user.check_user_password(password):
+            if user and user.check_user_password(password) and user.account_access:
                 return {'status': True, 'User': user}
             else:
                 return {'status': False, 'User': None}
         else:
             return {'status': False, 'User': None}
+
+    def update_paid_job(self, job_id):
+        """
+        The application looks up the job with the provided job_id
+        in order to update the job's paid status
+
+        :param job_id: The id of the job intended to be updated
+        :return: The job with the matching id.
+        """
+        jobs = self.get_job_by_id(job_id)
+        if len(jobs) is not 1:
+            return False
+
+        job = jobs[0]
+        if job:
+            job.paid = True
+            job.competed = True
+            job.date_completed = datetime.now()
+            self.session.add(job)
+            self.session.commit()
+            return True
+        return False
+
+    def update_availability(self, user_id):
+        """
+        The application looks up the user with the provided id
+        in order to update the user's availability status
+
+        :param user_id: The id of the user intended to be updated
+        :return: The user with the matching id.
+        """
+        users = self.get_user_by_id(user_id)
+        if len(users) is not 1:
+            return False
+
+        user = users[0]
+        if user:
+            if user.availability:
+                user.availability = False
+                user.availability_date_update = datetime.utcnow()
+            else:
+                user.availability = True
+                user.availability_date_update = datetime.utcnow()
+            self.session.add(user)
+            self.session.commit()
+            return True
+        return False
+
+    def update_user_access(self, user_id):
+            """
+            The application looks up the user with the provided id
+            in order to update the user's access to the platform
+    
+            :param user_id: The id of the user intended to be updated
+            :return: The user with the matching id.
+            """
+            users = self.get_user_by_id(user_id)
+            if len(users) is not 1:
+                return False
+
+            user = users[0]
+            if user:
+                if user.account_access:
+                    user.account_access = False
+                else:
+                    user.account_access = True
+                self.session.add(user)
+                self.session.commit()
+                return True
+            return False
 
     def populate_database(self):
 
@@ -445,46 +649,164 @@ class DatabaseController:
                     verbatim=None,
                     timestamp=None,
                     duration=30,
-                    description='From 10min to 40min',
-                    user=user1.user_id)
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                    description='first job give to one person')
 
         job2 = Jobs(job_id='0104SG1SDYE3',
                     job_name='Second test job',
                     verbatim=None,
                     timestamp=True,
                     duration=10,
-                    description='From 0min to 10min',
-                    user=user1.user_id)
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                    description='From 0min to 10min')
 
         job3 = Jobs(job_id='010DOISDU733',
                     job_name='Third test job',
                     verbatim=True,
                     timestamp=True,
                     duration=50,
-                    description='From 0min to 50min',
-                    user=user1.user_id)
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                    description='From 0min to 50min')
 
         job4 = Jobs(job_id='01032DISDU733',
                     job_name='fOURTH test job',
                     verbatim=True,
                     timestamp=True,
                     duration=50,
-                    description='From 0min to 50min',
-                    user=user2.user_id)
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                    description='From 0min to 50min')
 
         job5 = Jobs(job_id='KSFFU9EHDU998',
                     job_name='Third test job',
                     verbatim=True,
                     timestamp=False,
                     duration=18,
-                    description='From 0min to 18min',
-                    user=user2.user_id)
+                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                    description='From 0min to 18min')
 
         self.session.add(job1)
         self.session.add(job2)
         self.session.add(job3)
         self.session.add(job4)
         self.session.add(job5)
+        self.session.commit()
+
+        #
+        # Job Details
+        #
+
+        job_details1 =JobsDetails(duration=30,
+                                  job_name=job4.job_name,
+                                  description='from min 10 to min 40',
+                                  user=user1.user_id,
+                                  download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                  job=job4.job_id)
+
+        job_details2 = JobsDetails(duration=10,
+                                   job_name=job2.job_name,
+                                   description='whole file',
+                                   user=user1.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job2.job_id)
+
+        job_details3 = JobsDetails(duration=10,
+                                   job_name=job4.job_name,
+                                   description='from min 40 to min 50',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job4.job_id)
+
+        job_details4 = JobsDetails(duration=10,
+                                   job_name=job4.job_name,
+                                   description='from min 0 to min 10',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job4.job_id)
+
+        job_details5 = JobsDetails(duration=30,
+                                   job_name=job1.job_name,
+                                   description='whole file',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job1.job_id)
+
+        job_details6 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='0 to 5 min',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job3.job_id)
+
+        job_details7 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='5 to 10 min',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job3.job_id)
+
+        job_details8 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='10 to 15 min',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job3.job_id)
+
+        job_details9 = JobsDetails(duration=5,
+                                   job_name=job3.job_name,
+                                   description='15 to 20 min',
+                                   user=user2.user_id,
+                                   download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                   job=job3.job_id)
+
+        job_details10 = JobsDetails(duration=10,
+                                    job_name=job3.job_name,
+                                    description='20 to 30 min',
+                                    user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                    job=job3.job_id)
+
+        job_details11 = JobsDetails(duration=10,
+                                    job_name=job3.job_name,
+                                    description='30 to 40 min',
+                                    user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                    job=job3.job_id)
+
+        job_details12 = JobsDetails(duration=5,
+                                    job_name=job3.job_name,
+                                    description='40 to 45 min',
+                                    user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                    job=job3.job_id)
+
+        job_details13 = JobsDetails(duration=5,
+                                    job_name=job3.job_name,
+                                    description='45 to 50 min',
+                                    user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                    job=job3.job_id)
+
+        job_details14 = JobsDetails(duration=18,
+                                    job_name=job5.job_name,
+                                    description='whole file',
+                                    user=user2.user_id,
+                                    download_link='https://www.w3schools.com/images/myw3schoolsimage.jpg',
+                                    job=job5.job_id)
+
+        self.session.add(job_details1)
+        self.session.add(job_details2)
+        self.session.add(job_details3)
+        self.session.add(job_details4)
+        self.session.add(job_details5)
+        self.session.add(job_details6)
+        self.session.add(job_details7)
+        self.session.add(job_details8)
+        self.session.add(job_details9)
+        self.session.add(job_details10)
+        self.session.add(job_details11)
+        self.session.add(job_details12)
+        self.session.add(job_details13)
+        self.session.add(job_details14)
         self.session.commit()
 
         #

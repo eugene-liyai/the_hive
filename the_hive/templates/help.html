@@ -1,0 +1,115 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/help.css') }}" />
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="{{ url_for('static', filename='images/side_nav.png') }}" alt="side nav image" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h3>
+                            Side Navigation panel
+                        </h3>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            The side navigation gives you access to the various pages accessible in the application.
+                            Through this navigation panel, you are able to access the profile page, set your availability and just to state the obvious,
+                            you are also able to log out.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <h3>
+                            Profile panel
+                        </h3>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            The profile panel allows you access to your profile information. This information is useful when conducting your `hive` day to day activities.
+                        </p>
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <img src="{{ url_for('static', filename='images/profile_page.png') }}" alt="profile image" class="img-rounded img-responsive" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-8">
+                        <img src="{{ url_for('static', filename='images/profile_action_btn.png') }}" alt="profile image" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <h3>
+                            Profile Action
+                        </h3>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            The Action button in the profile panel allows you to edit your profile,
+                            change your password, view account stats and an extra link that enables you set your availability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <h3>
+                            Availability panel
+                        </h3>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            As the name suggests, this panel marks your availability to receive jobs/tasks.
+                            When set to 'Yes', your account will be available for assignment of jobs.
+                        </p>
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <img src="{{ url_for('static', filename='images/availability_btn.png') }}" alt="availability image" class="img-rounded img-responsive" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-12">
+            <div class="well well-sm profile-well">
+                <div class="row">
+                    <div class="col-sm-6 col-md-8">
+                        <img src="{{ url_for('static', filename='images/jobs_table.png') }}" alt="jobs panel image" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <h3>
+                            Jobs Panel
+                        </h3>
+                        <div class="bottom-line col-md-12 col-sm-12 col-xs-12"></div>
+                        <p>
+                            The jobs panel list all jobs that your account has been assigned.
+                            You can get more information on a job by clicking its row in the table.
+                            You can also click the table heading cells to sort the row in ascending or descending order.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+{% endblock %}

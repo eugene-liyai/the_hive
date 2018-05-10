@@ -1,0 +1,134 @@
+.btn,
+.btn-primary,
+.btn-info,
+.btn-danger,
+.btn-warning {
+    border: none;
+    border-radius: 5px;
+}
+
+.add-btn {
+    padding: 7px;
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.badgebox {
+    opacity: 0;
+}
+
+.badgebox + .badge {
+    /* Move the check mark away when unchecked */
+    text-indent: -999999px;
+    /* Makes the badge's width stay the same checked and unchecked */
+	width: 27px;
+}
+
+.badgebox:focus + .badge {
+    /* Set something to make the badge looks focused */
+    /* This really depends on the application, in my case it was: */
+
+    /* Adding a light border */
+    box-shadow: inset 0px 0px 5px;
+    /* Taking the difference out of the padding */
+}
+
+.badgebox:checked + .badge {
+    /* Move the check mark back when checked */
+	text-indent: 0;
+}
+
+.profile-well {
+    border-radius: 10px;
+    margin-top: 30px;
+    border: 1px solid #2c3e50;
+}
+
+.bottom-line {
+    border-bottom: 1px solid #2c3e50;
+    margin: 10px 0;
+}
+
+.panel-style {
+    margin-top: 20px;
+}
+
+#rates_table {
+    margin-top: 40px;
+}
+
+#availability_btn {
+    border: 1px solid #2c3e50;
+    border-radius: 6px;
+}
+
+#availability_btn .notActive{
+    color: #2c3e50;
+    background-color: #fff;
+}
+
+.alert-style {
+    margin-top: 20px;
+}
+
+ul.nav.navbar-nav.navbar-right {
+    display: none;
+}
+
+/* Media Queries */
+@media screen and (max-width: 766px) {
+
+    ul.nav.tabs {
+        display: none;
+    }
+
+    .nav-slider-container {
+        margin-top: 0;
+    }
+
+    #sidebar {
+        display: none;
+    }
+    ul.nav.tabs span {
+        display: none;
+    }
+
+    #tab1, #tab2, #tab3, #tab4 {
+        margin-left: 110px;
+    }
+
+    #tab1 h2, #tab2 h2, #tab3 h2, #tab4 h2 {
+        font-size: 24px;
+        line-height: 28px;
+        width: 200%;
+        margin-top: 20px;
+    }
+
+    #tab1 p, #tab2 p, #tab3 p, #tab4 p {
+        display: none;
+    }
+
+    div.panel.panel-default {
+        margin-left: -80px;
+    }
+
+    div.fixed-plugin {
+        display: none;
+    }
+
+    .custom-header {
+        margin-left: 5px;
+    }
+
+    .custom-header {
+        margin-left: 5px;
+    }
+
+    ul.nav.navbar-nav.navbar-right li {
+        margin-left: 10px;
+    }
+
+    ul.nav.navbar-nav.navbar-right {
+        display: table;
+    }
+}

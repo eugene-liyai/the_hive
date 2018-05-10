@@ -1,0 +1,302 @@
+{% extends "dashboard.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidenav.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobDisplay.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+{% endblock %}
+
+{% block dashboard_content%}
+
+<div class="row">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-info alert-style">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Alert!</strong> {{messages[0]}}.
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
+
+{% if user.role == 'ROLE_ADMIN' %}
+<div class="row">
+    <div class="col-sm-3 add_job_div">
+        <div class="dataTables_length">
+            <button class="btn-primary add-btn" data-toggle="modal" data-target="#add_job_item"><i class="fa fa-sitemap" aria-hidden="true"></i> Add Job Item</button>
+        </div>
+    </div>
+    <div class="col-sm-9 add_job_div text-right">
+        <div class="dataTables_length">
+            <button class="btn-primary add-btn" data-toggle="modal" id="summary-btn" data-rate="{{rates.rate}}" data-target="#summary"><i class="fa fa-list-ul" aria-hidden="true"></i> Summary</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+<table id="user_jobs_table" class="table table-inverse table-hover table-striped" cellspacing="0" width="100%">
+  <thead class="thead-inverse">
+    <tr>
+        <th><i class="fa fa-check"></i></th>
+        <th><i class="fa fa-hashtag"></i> Job ID</th>
+        <th><i class="fa fa-sitemap"></i> Job Item ID</th>
+        <th><i class="fa fa-calendar"></i> Date Added</th>
+        <th><i class="fa fa-user"></i> Agent</th>
+        <th><i class="fa fa-history"></i> Duration</th>
+        <th><i class="fa fa-money"></i> Paid</th>
+        <th><i class="fa fa-mouse-pointer"></i> Action</th>
+    </tr>
+  </thead>
+      <tbody>
+      {% for job in job_items %}
+        <tr>
+          <td><input type="checkbox" class="checkbox_select" id="select_{{job.job_details_id}}"></td>
+          <td>{{job.job}}</td>
+          <td>{{job.job_details_id}}</td>
+          <td>{{job.date_created}}</td>
+          <td>
+              {% for user in users%}
+                {% if user.user_id == job.user %}
+                    {{user.first_name}} {{user.last_name}}
+                {% endif %}
+              {% endfor %}
+          </td>
+          <td class="duration">{{job.duration}}</td>
+          <td>
+              {% if job.paid == False %}
+                <i class="fa fa-times-circle-o text-warning"></i>
+              {% else %}
+                <i class="fa fa-check-circle-o text-success"></i>
+              {% endif %}
+          </td>
+          <td>
+              <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit_{{job.job_details_id}}"><i class="fa fa-edit"></i></a>
+              <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete_{{job.job_details_id}}"><i class="fa fa-trash-o"></i></a>
+          </td>
+        </tr>
+
+      <!-- Modal edit job -->
+      <div class="modal fade" id=edit_{{job.job_details_id}} role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Job Item ID {{job.job_details_id}}</h4>
+              </div>
+              <div class="modal-body">
+                  <form class="form-horizontal" action="/admin/update_job_item/{{job.job_details_id}}" method="POST">
+                        <div class="form-group">
+                            <label class="control-label" for="edit_job_id">Job ID</label>
+                            <input class="form-control input-sm" id="edit_job_id" type="text" value="{{job.job}}" disabled>
+                            <input type="hidden" value="{{job.job}}" name="job_name">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="edit_job_item_id">Item ID</label>
+                            <input class="form-control input-sm" id="edit_job_item_id" type="text" value="{{job.job_details_id}}" disabled>
+                            <input type="hidden" value="{{job.job_details_id}}" name="job_item_id">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_item_duration">Duration</label>
+                            <input class="form-control input-sm" id="edit_item_duration" type="text" value="{{job.duration}}"
+                                autocomplete="off" name="edit_item_duration">
+                        </div>
+                        <div class="form-group">
+                            <label class=" control-label" for="edit_item_description">Description</label>
+                            <input class="form-control input-sm" id="edit_item_description" type="text" value="{{job.description}}"
+                                autocomplete="off" name="edit_item_description">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="edit_user_assign">Reassign</label>
+                                <select class="form-control input-sm" id="edit_user_assign" name="user">
+                                    {% for user in users %}
+                                        {% if job.user == user.user_id %}
+                                        <option value={{user.user_id}} selected>{{user.first_name}} {{user.last_name}}</option>
+                                        {% endif %}
+                                        {% if job.user != user.user_id %}
+                                        <option value={{user.user_id}} >{{user.first_name}} {{user.last_name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="progress{{job.job_details_id}}" class="col-sm-3 col-md-3 control-label toggle-label">
+                                <i class="fa fa-arrow-right"></i> Progress?
+                            </label>
+                            <div class="col-sm-7 col-md-7 text-left">
+                                <div class="input-group">
+                                    <div id="progress_toggle" class="btn-group">
+                                        {% if job.competed %}
+                                        <a class="btn btn-success btn-sm active" data-toggle="progress{{job.job_details_id}}" data-title="complete">Complete</a>
+                                        <a class="btn btn-warning btn-sm notActive" data-toggle="progress{{job.job_details_id}}" data-title="notComplete">In Progress</a>
+                                        <input type="hidden" name="progress" id="progress{{job.job_details_id}}" value="complete">
+                                        {% else %}
+                                        <a class="btn btn-success btn-sm notActive" data-toggle="progress{{job.job_details_id}}" data-title="complete">Complete</a>
+                                        <a class="btn btn-warning btn-sm active" data-toggle="progress{{job.job_details_id}}" data-title="notComplete">In Progress</a>
+                                        <input type="hidden" name="progress" id="progress{{job.job_details_id}}" value="notComplete">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pay-status{{job.job_details_id}}" class="col-sm-3 col-md-3 control-label" style="margin-top: 12px; padding: 0">
+                                <i class="fa fa-arrow-right"></i> Payed?
+                            </label>
+                            <div class="col-sm-7 col-md-7 text-left toggle-label">
+                                <div class="input-group">
+                                    <div id="progress_toggle" class="btn-group">
+                                        {% if job.paid %}
+                                        <a class="btn btn-success btn-sm active" data-toggle="pay-status{{job.job_details_id}}" data-title="paid">Yes</a>
+                                        <a class="btn btn-danger btn-sm notActive" data-toggle="pay-status{{job.job_details_id}}" data-title="notPaid">No</a>
+                                        <input type="hidden" name="pay-status" id="pay-status{{job.job_details_id}}" value="paid">
+                                        {% else %}
+                                        <a class="btn btn-success btn-sm notActive" data-toggle="pay-status{{job.job_details_id}}" data-title="paid">Yes</a>
+                                        <a class="btn btn-danger btn-sm active" data-toggle="pay-status{{job.job_details_id}}" data-title="notPaid">No</a>
+                                        <input type="hidden" name="pay-status" id="pay-status{{job.job_details_id}}" value="notPaid">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 100px;">
+                            <hr>
+                            <button type="submit" class="btn btn-primary" >Submit</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </form>
+              </div>
+            </div>
+
+          </div>
+      </div>
+
+      <!-- Modal delete job-->
+      <div class="modal fade" id=delete_{{job.job_details_id}} role="dialog">
+          <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Delete Job Item ID {{job.job_details_id}}</h4>
+                  </div>
+                  <div class="modal-body">
+                      <p><strong><i class="fa fa-info"></i> Are you sure you want to delete this job item?</strong></p>
+                      <div class="row text-center">
+                          <div class="col-md-6">
+                              <a href="{{ url_for('delete_job_item', job_item_id=job.job_details_id)}}" class="btn btn-primary btn-sm btn-block">Yes</a>
+                          </div>
+                          <div class="col-md-6">
+                              <a class="btn btn-danger btn-sm btn-block" data-dismiss="modal">No</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+      </tbody>
+</table>
+
+  <!-- Modal add job item-->
+  <div class="modal fade" id="add_job_item" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-sitemap" aria-hidden="true"></i> Add Job Item</h4>
+        </div>
+          <form class="form-horizontal" action="/admin/add_job_item" method="post">
+              <fieldset>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="job_item_name">Parent Job ID</label>
+                        <div class="col-lg-9">
+                            <select class="form-control input-sm" id="job_item_name" name="job_item_name">
+                                {% for job in inprogress %}
+                                    <option value={{job.job_id}} >{{job.job_id}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-lg-3 control-label" for="item_duration">Duration</label>
+                        <div class="col-lg-9">
+                            <input class="form-control input-sm" type="text" name="item_duration" id="item_duration" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="item_description" class="col-lg-3 control-label">Description</label>
+                      <div class="col-lg-9">
+                        <textarea class="form-control" rows="3" name="item_description" id="item_description"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="user_assign">Assign</label>
+                        <div class="col-lg-9">
+                            <select class="form-control input-sm" id="user_assign" name="user_assign">
+                                {% for agent in agents %}
+                                    <option value={{agent.user_id}} >{{agent.first_name}} {{agent.last_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </fieldset>
+          </form>
+      </div>
+
+    </div>
+  </div>
+
+    <!-- view jobs summary-->
+  <div class="modal fade" id="summary" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-list-ul" aria-hidden="true"></i> Summary</h4>
+        </div>
+        <div class="modal-body">
+            <div class="job-container">
+                <h4><i class="fa fa-list-ul"></i> Jobs Summary</h4>
+                <p class="description">Sum of selected jobs</p>
+                <p><i class="fa fa-clock-o"></i> Total Duration <span id="total-duration"></span></p>
+                <p><i class="fa fa-dollar"></i> Sum Total <span id="sum-total"></span></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/settings-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-sidebar-animation.js') }}"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/tables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/table-toggle.js') }}"></script>
+{% endblock %}
