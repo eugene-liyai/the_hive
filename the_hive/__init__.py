@@ -12,13 +12,11 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from the_hive.config import app_config
 
-APP_ROOT = os.path.join(os.path.dirname(__file__))
-dotenv_path = os.path.join(APP_ROOT, '.env')
-load_dotenv(dotenv_path)
+load_dotenv(find_dotenv())
 
 app = Flask(__name__)
 app.config.from_object(app_config['development'])
