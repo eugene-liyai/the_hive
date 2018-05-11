@@ -22,7 +22,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY')
     SECRET_KEY = os.getenv('SECRET_KEY')
 
 
@@ -32,7 +32,7 @@ class ProductionConfig(Config):
     """
 
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY')
     SECRET_KEY = os.getenv('SECRET_KEY')
 
 
@@ -45,7 +45,7 @@ class TestingConfig(Config):
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_TEST_SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.getenv('THE_HIVE_SQLALCHEMY')
     SECRET_KEY = os.getenv('SECRET_KEY')
 
 
