@@ -25,7 +25,8 @@ from the_hive.controllers.email_controller import send_email
 # Database engine
 # Postgres connection postgresql+psycopg2://user:password@host/database
 #
-db_engine = os.environ['THE_HIVE_SQLALCHEMY_DATABASE_URI']
+db_engine = os.getenv('THE_HIVE_SQLALCHEMY')
+print(db_engine)
 
 PAGE_SIZE = 10
 

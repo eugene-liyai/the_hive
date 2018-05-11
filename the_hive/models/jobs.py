@@ -18,7 +18,7 @@ from the_hive.models.db_model import Model
 
 class Jobs(Model):
     __tablename__ = 'Jobs'
-    job_id = Column(String, primary_key=True, nullable=False)
+    job_id = Column(String(100), primary_key=True, nullable=False)
     job_name = Column(String(100), nullable=False)
     date_created = Column(Date, default=datetime.utcnow)
     date_completed = Column(Date)
@@ -27,7 +27,7 @@ class Jobs(Model):
     timestamp = Column(Boolean, default=False, nullable=False)
     paid = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
-    download_link = Column(String, nullable=False)
+    download_link = Column(String(255), nullable=False)
     description = Column(Text)
     job_detail = relationship("JobsDetails", backref="Jobs")
 

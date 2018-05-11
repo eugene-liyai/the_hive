@@ -13,11 +13,11 @@ import os
 from the_hive.controllers.database_controller import DatabaseController
 
 # development database
-db_engine = os.environ['THE_HIVE_SQLALCHEMY_DATABASE_URI']
+db_engine = os.getenv('THE_HIVE_SQLALCHEMY')
 DATA_CONTROLLER = DatabaseController(db_engine)
 
 # test database
-test_database = os.environ['THE_HIVE_TEST_SQLALCHEMY_DATABASE_URI']
+test_database = os.getenv('THE_HIVE_TEST_SQLALCHEMY_DATABASE_URI')
 TEST_DATA_CONTROLLER = DatabaseController(test_database)
 
 

@@ -18,16 +18,16 @@ from the_hive.models.db_model import Model
 class JobsDetails(Model):
     __tablename__ = 'JobsDetails'
     job_details_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    job_name = Column(String)
+    job_name = Column(String(100))
     paid = Column(Boolean, default=False, nullable=False)
     date_created = Column(Date, default=datetime.utcnow)
     date_completed = Column(Date)
     competed = Column(Boolean, default=False, nullable=False)
     duration = Column(Integer, nullable=False)
-    download_link = Column(String, nullable=False)
+    download_link = Column(String(255), nullable=False)
     description = Column(Text)
     user = Column(Integer, ForeignKey('Users.user_id'))
-    job = Column(String, ForeignKey('Jobs.job_id'))
+    job = Column(String(100), ForeignKey('Jobs.job_id'))
 
     def serialize(self):
         """
