@@ -14,12 +14,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from dotenv import load_dotenv, find_dotenv
 
-from the_hive.config import app_config
-
 load_dotenv(find_dotenv())
 
 app = Flask(__name__)
-app.config.from_object(app_config['development'])
 mail = Mail(app)
 
 # Configure authentication
